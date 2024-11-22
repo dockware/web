@@ -13,16 +13,17 @@ echo "6c 6f 6f 6b 69 6e 67 20 66 6f 72 20 61 20 6a 6f 62 3f 20 77 72 69 74 65 20
 echo ""
 echo "*******************************************************"
 echo "** DOCKWARE IMAGE: flex"
-echo "** Tag: latest"
-echo "** Version: 1.8.0"
-echo "** Built: $(cat /build-date.txt)"
-echo "** Copyright 2022 dasistweb GmbH"
+echo "** Tag: $(cat /dockware/tag.txt)"
+echo "** Version: $(cat /dockware/version.txt)"
+echo "** Built: $(cat /dockware/build-date.txt)"
+echo "** Copyright $(cat /dockware/copyright.txt)"
 echo "*******************************************************"
 echo ""
 echo "launching dockware...please wait..."
 echo ""
 
 set -e
+
 
 source /etc/apache2/envvars
 source /var/www/.bashrc
@@ -50,7 +51,7 @@ if [ $RECOVERY_MODE = 0 ]; then
     echo "-----------------------------------------------------------"
     
     
-        if [ $FILEBEAT_ENABLED = 1 ]; then
+    if [ $FILEBEAT_ENABLED = 1 ]; then
        echo "DOCKWARE: activating Filebeat..."
        sudo service filebeat start --strict.perms=false
        echo "-----------------------------------------------------------"
@@ -81,13 +82,10 @@ if [ $RECOVERY_MODE = 0 ]; then
     echo "DOCKWARE: restarting SSH service...."
     sudo service ssh restart
     echo "-----------------------------------------------------------"
-    
-    
-    
-        echo "DOCKWARE: starting cron service...."
+
+    echo "DOCKWARE: starting cron service...."
     sudo service cron start
     echo "-----------------------------------------------------------"
-    
     
 
     # --------------------------------------------------
@@ -96,13 +94,26 @@ if [ $RECOVERY_MODE = 0 ]; then
     sudo sed -i 's#__dockware_apache_docroot__#'${APACHE_DOCROOT}'#g' /etc/apache2/sites-enabled/000-default.conf
     # --------------------------------------------------
 
-        echo "DOCKWARE: switching to PHP ${PHP_VERSION}..."
-    cd /var/www && make switch-php version=${PHP_VERSION}
-    sudo service apache2 stop
-    echo "-----------------------------------------------------------"
-    
+    if [ "$NODE_VERSION" != "not-set" ]; then
+       echo "DOCKWARE: switching to Node ${NODE_VERSION}..."
+       nvm alias default ${NODE_VERSION}
+       # now make sure to at least have node and npm as sudo
+       # nvm itself is not possible by design
+       sudo rm -f /usr/local/bin/node
+       sudo rm -f /usr/local/bin/npm
+       sudo ln -s "$(which node)" "/usr/local/bin/node"
+       sudo ln -s "$(which npm)" "/usr/local/bin/npm"
+       echo "-----------------------------------------------------------"
+    fi
 
-        if [ $COMPOSER_VERSION = 1 ]; then
+    if [ "$PHP_VERSION" != "not-set" ]; then
+      echo "DOCKWARE: switching to PHP ${PHP_VERSION}..."
+      cd /var/www && make switch-php version=${PHP_VERSION}
+      sudo service apache2 stop
+      echo "-----------------------------------------------------------"
+    fi
+
+   if [ $COMPOSER_VERSION = 1 ]; then
        echo "DOCKWARE: switching to composer 1..."
        sudo composer self-update --1
        echo "-----------------------------------------------------------"
@@ -118,14 +129,14 @@ if [ $RECOVERY_MODE = 0 ]; then
     export COMPOSER_HOME=/var/www
     
 
-            if [ $XDEBUG_ENABLED = 1 ]; then
+    if [ $XDEBUG_ENABLED = 1 ]; then
        sh /var/www/scripts/bin/xdebug_enable.sh
      else
        sh /var/www/scripts/bin/xdebug_disable.sh
     fi
     
 
-        if [ $TIDEWAYS_KEY != "not-set" ]; then
+    if [ $TIDEWAYS_KEY != "not-set" ]; then
         echo "DOCKWARE: activating Tideways...."
         sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_ENV__/'${TIDEWAYS_ENV}'/g' /etc/default/tideways-daemon
         sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_API_KEY__/'${TIDEWAYS_KEY}'/g' /etc/php/$PHP_VERSION/fpm/conf.d/20-tideways.ini
@@ -133,19 +144,7 @@ if [ $RECOVERY_MODE = 0 ]; then
         sudo service tideways-daemon start
         echo "-----------------------------------------------------------"
     fi
-    
 
-        if [[ ! -z "$NODE_VERSION" ]]; then
-       echo "DOCKWARE: switching to Node ${NODE_VERSION}..."
-       nvm alias default ${NODE_VERSION}
-       # now make sure to at least have node and npm as sudo
-       # nvm itself is not possible by design
-       sudo rm -f /usr/local/bin/node
-       sudo rm -f /usr/local/bin/npm
-       sudo ln -s "$(which node)" "/usr/local/bin/node"
-       sudo ln -s "$(which npm)" "/usr/local/bin/npm"
-       echo "-----------------------------------------------------------"
-    fi
     
 
     

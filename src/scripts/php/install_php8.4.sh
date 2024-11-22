@@ -1,4 +1,5 @@
 apt-get install -y  php8.4-fpm \
+                    php8.4-cli \
                     php8.4-gd \
                     php8.4-iconv \
                     php8.4-intl \
@@ -7,7 +8,6 @@ apt-get install -y  php8.4-fpm \
                     php8.4-pdo \
                     php8.4-mysql \
                     php8.4-curl \
-                    php8.4-cli \
                     php8.4-ldap \
                     php8.4-pgsql \
                     php8.4-gettext \
@@ -23,7 +23,11 @@ apt-get install -y  php8.4-fpm \
                     php8.4-mongo \
                     dh-php
 
+pecl install xdebug-beta
 
 cat /tmp/general.ini >| /etc/php/8.4/fpm/conf.d/01-general.ini
 cat /tmp/general.ini >| /etc/php/8.4/cli/conf.d/01-general.ini
 cat /tmp/cli.ini >| /etc/php/8.4/cli/conf.d/01-general-cli.ini
+
+cp /tmp/xdebug.ini /etc/php/8.4/fpm/conf.d/20-xdebug.ini
+cp /tmp/xdebug.ini /etc/php/8.4/cli/conf.d/20-xdebug.ini

@@ -3,6 +3,7 @@ DEFAULT_PHP_VERSION=8.4
 
 
 sh ./php/install_php8.4.sh
+sh ./php/install_php8.2.sh
 
 # TODO i dont know about this
 apt-get remove -y dh-php

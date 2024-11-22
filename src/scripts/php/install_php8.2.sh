@@ -21,3 +21,13 @@ apt-get install -y  php8.2-fpm \
                     php8.2-pcov \
                     php8.2-mongo \
                     dh-php
+
+pecl install xdebug
+
+
+cat /tmp/general.ini >| /etc/php/8.2/fpm/conf.d/01-general.ini
+cat /tmp/general.ini >| /etc/php/8.2/cli/conf.d/01-general.ini
+cat /tmp/cli.ini >| /etc/php/8.2/cli/conf.d/01-general-cli.ini
+
+cp /tmp/xdebug.ini /etc/php/8.2/fpm/conf.d/20-xdebug.ini
+cp /tmp/xdebug.ini /etc/php/8.2/cli/conf.d/20-xdebug.ini

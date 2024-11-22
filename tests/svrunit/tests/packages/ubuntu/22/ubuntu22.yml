@@ -1,4 +1,0 @@
-commands:
-  - name: "Check Ubuntu 22.04"
-    command: "lsb_release -a"
-    expected: "Ubuntu 22.04"

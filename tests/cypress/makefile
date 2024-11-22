@@ -24,30 +24,9 @@ endif
 
 # ---------------------------------------------------------------------------------------------
 
-run5: ## Runs all E2E tests for Shopware 5
+run: ## Runs all E2E tests for Flex
 ifndef url
 	$(warning Please provide the URL argument to Start Cypress!)
 	@exit 1
 endif
-	CYPRESS_BASE_URL=$(url) CYPRESS_SHOPWARE=$(shopware) ./node_modules/.bin/cypress run --env conf=dev --headless --spec 'cypress/e2e/sw5/**/*'
-
-run6: ## Runs all E2E tests for Shopware 6
-ifndef url
-	$(warning Please provide the URL argument to Start Cypress!)
-	@exit 1
-endif
-	CYPRESS_BASE_URL=$(url) CYPRESS_SHOPWARE=$(shopware) ./node_modules/.bin/cypress run --env conf=dev --headless --spec 'cypress/e2e/sw6/**/*'
-
-run-flex: ## Runs all E2E tests for Flex
-ifndef url
-	$(warning Please provide the URL argument to Start Cypress!)
-	@exit 1
-endif
-	CYPRESS_BASE_URL=$(url) ./node_modules/.bin/cypress run --env conf=dev --headless --spec 'cypress/e2e/flex/**/*'
-
-run-essentials: ## Runs all E2E tests for Essentials
-ifndef url
-	$(warning Please provide the URL argument to Start Cypress!)
-	@exit 1
-endif
-	CYPRESS_BASE_URL=$(url) ./node_modules/.bin/cypress run --env conf=dev --headless --spec 'cypress/e2e/essentials/**/*'
+	CYPRESS_BASE_URL=$(url) ./node_modules/.bin/cypress run --headless

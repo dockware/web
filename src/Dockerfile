@@ -7,28 +7,27 @@ LABEL title="Dockware flex:latest" \
       maintainer="dasistweb GmbH"
 
 # remember build-date
-RUN date >/build-date.txt && \
+RUN mkdir /dockware && \
+    echo 'dev-main' > /dockware/tag.txt && \
+    echo '2.0.0' > /dockware/version.txt && \
+    date >/dockware/build-date.txt && \
+    echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
     mkdir -p /var/www && \
-    mkdir -p /var/www/scripts
-
-# add our changelog to the containers
-ADD ./assets/CHANGELOG.md /var/www/CHANGELOG.md
+    mkdir -p /var/www/scripts && \
+    mkdir -p /var/dockware/cache
 
 ## ***********************************************************************
 ##  IMAGE VARIABLES
 ## ***********************************************************************
 ENV TZ Europe/Berlin
-ENV PHP_VERSION 7.4
+ENV PHP_VERSION not-set
 ENV APACHE_DOCROOT /var/www/html/public
-ENV SW_TASKS_ENABLED 0
 ENV COMPOSER_VERSION not-set
-ENV NODE_VERSION 12
-ENV SHOP_DOMAIN localhost
+ENV NODE_VERSION not-set
 ENV RECOVERY_MODE 0
 RUN echo "export TZ=${TZ}" >> /etc/profile \
  && echo "export PHP_VERSION=${PHP_VERSION}" >> /etc/profile \
  && echo "export APACHE_DOCROOT=${APACHE_DOCROOT}" >> /etc/profile \
- && echo "export SW_TASKS_ENABLED=${SW_TASKS_ENABLED}" >> /etc/profile \
  && echo "export COMPOSER_VERSION=${COMPOSER_VERSION}" >> /etc/profile \
  && echo "export NODE_VERSION=${NODE_VERSION}" >> /etc/profile \
  && echo "export SHOP_DOMAIN=${SHOP_DOMAIN}" >> /etc/profile \
@@ -46,7 +45,7 @@ ENV XDEBUG_ENABLED 0
 ENV FILEBEAT_ENABLED 0
 ENV TIDEWAYS_KEY not-set
 ENV TIDEWAYS_ENV production
-ENV BASH_ENV /var/www/.bashrc
+ENV BASH_ENV /var/dockware/.bashrc
 ENV SW_API_ACCESS_KEY 'not-set'
 
 COPY --chmod=0755 ./config/tideways/tideways.ini /tmp/tideways.ini
@@ -56,6 +55,9 @@ COPY --chmod=0755 ./assets/scripts/makefile /var/www/makefile
 COPY --chmod=0755 ./assets/scripts/bin /var/www/scripts/bin
 COPY --chmod=0755 ./assets/scripts/cron /var/www/scripts/cron
 COPY --chmod=0755 entrypoint.sh /entrypoint.sh
+
+
+COPY --chmod=0755 ./assets/scripts/cron /tmp/xdebug-3.ini
 
 # -------------------------------------------------------------------------------------------------------
 
@@ -131,7 +133,7 @@ RUN echo "root:root" | chpasswd \
     sed -i /etc/sudoers -re 's/^#includedir.*/## **Removed the include directive** ##"/g' && \
     # add our dockware user
     adduser --disabled-password --uid 5577 --gecos "" --ingroup www-data dockware && \
-    -m -d /var/www dockware | true && \
+    usermod -m -d /var/www dockware | true && \
     echo "dockware:dockware" | chpasswd && \
     usermod -a -G sudo dockware && \
     # allow sudo without pwd and dont require tty (for entrypoint commands)
@@ -228,27 +230,24 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --ver
 ##  NODE INSTALLATION
 ## ***********************************************************************
 
+ENV BASH_ENV /var/www/.bashrc
+#ENV NODE_PATH $NVM_DIR/v20/lib/node_modules
+#ENV PATH      $NVM_DIR/v20/bin:$PATH
+
 RUN cd /tmp/scripts && sh install_node.sh
 
-RUN echo "source /var/www/.nvm/nvm.sh" >> /var/www/.bashrc \
-    # -------------------------------------------------
-    && chown 33:33 /var/www/.bashrc \
-    # -------------------------------------------------
-    && echo "export BASH_ENV=${BASH_ENV}" >> /etc/profile
 
+RUN cd /var/www && npm install -g grunt-cli \
+    && cd /var/www && npm install grunt --save-dev \
+    && npm install -g --no-install-recommends yarn \
+    && chown -R www-data:www-data /var/www/.composer
 
 
 RUN chown www-data:www-data -R /var/www/scripts && \
     #make sure for the whole installation xdebug is off for performance
     sh /var/www/scripts/bin/xdebug_disable.sh && \
     chmod 755 /*.sh && \
-    chown 33:33 -R /var/www/html && \
-    mkdir -p /var/www/.npm && chown 33:33 /var/www/.npm -R && \
-    # this is necessary so that our user can
-    # change the default nvm node version
-    # otherwise the persisted node version switch would not work!
-    mkdir -p /var/www/.nvm && chown 33:33 /var/www/.nvm -R && \
-    echo ""
+    chown 33:33 -R /var/www/html
 
 ## ***********************************************************************
 ## SWITCH TO NORMAL USER (NOT ROOT ANYMORE!)

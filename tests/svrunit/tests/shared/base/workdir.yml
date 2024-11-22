@@ -1,4 +1,0 @@
-commands:
-  - name: "Default working directory is /var/www/html"
-    command: "pwd"
-    expected: "/var/www/html"

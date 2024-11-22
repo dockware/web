@@ -66,12 +66,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/svrunit/svrunit.git",
-                "reference": "35f7a8f44e2457f1aef4f1a353937e0623a44003"
+                "reference": "c5aad21cd38f7b8e610a26a79abda53304928cd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/svrunit/svrunit/zipball/35f7a8f44e2457f1aef4f1a353937e0623a44003",
-                "reference": "35f7a8f44e2457f1aef4f1a353937e0623a44003",
+                "url": "https://api.github.com/repos/svrunit/svrunit/zipball/c5aad21cd38f7b8e610a26a79abda53304928cd3",
+                "reference": "c5aad21cd38f7b8e610a26a79abda53304928cd3",
                 "shasum": ""
             },
             "require": {
@@ -117,7 +117,7 @@
                 "issues": "https://github.com/svrunit/svrunit/issues",
                 "source": "https://github.com/svrunit/svrunit/tree/main"
             },
-            "time": "2024-11-14T22:59:46+00:00"
+            "time": "2024-11-22T14:31:13+00:00"
         },
         {
             "name": "symfony/console",

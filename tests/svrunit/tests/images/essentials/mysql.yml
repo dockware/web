@@ -1,4 +1,0 @@
-commands:
-  - name: "MySQL installed"
-    command: "mysql --version"
-    expected: "mysql  Ver"

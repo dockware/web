@@ -1,0 +1,55 @@
+commands:
+  - name: "Check Ubuntu 22.04"
+    command: "lsb_release -a"
+    expected: "Ubuntu 22.04"
+
+  - name: "SUDO is installed"
+    command: "sudo"
+    expected: "usage: sudo -h"
+
+  - name: "JQ is installed"
+    command: "jq --version"
+    expected: "jq-1"
+
+  - name: "NANO is installed"
+    command: "nano --version"
+    expected: "GNU nano, version"
+
+  - name: "VIM is installed"
+    command: "vim --v"
+    expected: "VIM - Vi IMproved"
+
+  #- name: "Grunt is installed"
+  #  command: "grunt --version"
+  #  expected: "grunt-cli v1"
+
+ # - name: "YARN Dependency Manager exists"
+ #   command: "echo SVRUNIT: $(yarn -v)"
+ #   expected: "SVRUNIT: 1."
+
+  - name: "Permission: Verify 'www-data' has no shell login"
+    command: "cat /etc/passwd"
+    expected: "www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin"
+
+  - name: "Permission: Verify 'dockware' user is alias for 'www-data'"
+    command: "cat /etc/passwd"
+    expected: "dockware:x:33:33:,,,:/var/www:/bin/bash"
+
+  - name: "Default working directory is /var/www/html"
+    command: "pwd"
+    expected: "/var/www/html"
+
+
+file_exists:
+
+  - name: "SSH Private Key exists"
+    file: "/var/www/.ssh/id_rsa"
+    expected: 1
+
+  - name: "SSH Public Key exists"
+    file: "/var/www/.ssh/id_rsa.pub"
+    expected: 1
+
+  - name: "SSL Certificates exists"
+    file: "/etc/apache2/ssl/server.crt"
+    expected: 1

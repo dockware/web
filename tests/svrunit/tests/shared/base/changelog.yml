@@ -1,4 +1,0 @@
-file_exists:
-  - name: "Changelog exists in image"
-    file: "/var/www/CHANGELOG.md"
-    expected: 1

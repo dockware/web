@@ -21,4 +21,13 @@ apt-get install -y  php8.3-fpm \
                     php8.3-apcu \
                     php8.3-pcov \
                     php8.3-mongo \
-                    dh-php 
+                    dh-php
+
+pecl install xdebug
+
+cat /tmp/general.ini >| /etc/php/8.3/fpm/conf.d/01-general.ini
+cat /tmp/general.ini >| /etc/php/8.3/cli/conf.d/01-general.ini
+cat /tmp/cli.ini >| /etc/php/8.3/cli/conf.d/01-general-cli.ini
+
+cp /tmp/xdebug.ini /etc/php/8.3/fpm/conf.d/20-xdebug.ini
+cp /tmp/xdebug.ini /etc/php/8.3/cli/conf.d/20-xdebug.ini
