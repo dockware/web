@@ -1,0 +1,18 @@
+{
+    "trashAssetsBeforeRuns": true,
+    "watchForFileChanges": false,
+    "devices": [
+        {
+            "key": "desktop",
+            "name": "Desktop",
+            "width": 1920,
+            "height": 1080
+        },
+        {
+            "key": "ipad-landscape",
+            "name": "iPad (Landscape)",
+            "width": 1024,
+            "height": 768
+        }
+    ]
+}
