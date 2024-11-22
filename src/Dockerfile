@@ -231,10 +231,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --ver
 ## ***********************************************************************
 
 ENV BASH_ENV /var/www/.bashrc
-#ENV NODE_PATH $NVM_DIR/v20/lib/node_modules
-#ENV PATH      $NVM_DIR/v20/bin:$PATH
 
-RUN cd /tmp/scripts && sh install_node.sh
+RUN cd /tmp/scripts && bash install_node.sh
 
 
 RUN cd /var/www && npm install -g grunt-cli \
