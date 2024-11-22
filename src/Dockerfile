@@ -48,6 +48,9 @@ ENV TIDEWAYS_ENV production
 ENV BASH_ENV /var/dockware/.bashrc
 ENV SW_API_ACCESS_KEY 'not-set'
 
+ENV BASH_ENV /var/www/.bashrc
+
+
 COPY --chmod=0755 ./config/tideways/tideways.ini /tmp/tideways.ini
 COPY --chmod=0755 ./scripts /tmp/scripts
 
@@ -196,16 +199,6 @@ RUN mkdir -p /var/www/.ssh && \
     chmod 0700 /var/www/.ssh
 
 
-
-
-# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-##  PHP INSTALLATION
-# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-RUN cd /tmp/scripts && sh install_php.sh
-
-
-
 ## ***********************************************************************
 ##  MOD_SSL
 ##  create SSL certificate
@@ -217,6 +210,12 @@ RUN apt-get install -y openssl \
 
 
 
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##  PHP INSTALLATION
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+RUN cd /tmp/scripts && sh install_php.sh
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --version=2.2.9 --quiet \
     # prepare "global" composer directory for www-data
     && mkdir -p /var/www/.composer \
@@ -224,13 +223,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --ver
     && chmod 755 /tmp/composer.phar \
     && mv /tmp/composer.phar /usr/local/bin/composer
 
-
-
 ## ***********************************************************************
 ##  NODE INSTALLATION
 ## ***********************************************************************
-
-ENV BASH_ENV /var/www/.bashrc
 
 RUN cd /tmp/scripts && bash install_node.sh
 
