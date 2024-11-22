@@ -51,16 +51,17 @@ ENV SW_API_ACCESS_KEY 'not-set'
 ENV BASH_ENV /var/www/.bashrc
 
 
-COPY --chmod=0755 ./config/tideways/tideways.ini /tmp/tideways.ini
 COPY --chmod=0755 ./scripts /tmp/scripts
+
+COPY --chmod=0755 ./config/php/xdebug-3.ini /tmp/xdebug-3.ini
+COPY --chmod=0755 ./config/php/xdebug-2.ini /tmp/xdebug-2.ini
+COPY --chmod=0755 ./config/tideways/tideways.ini /tmp/tideways.ini
 
 COPY --chmod=0755 ./assets/scripts/makefile /var/www/makefile
 COPY --chmod=0755 ./assets/scripts/bin /var/www/scripts/bin
 COPY --chmod=0755 ./assets/scripts/cron /var/www/scripts/cron
+
 COPY --chmod=0755 entrypoint.sh /entrypoint.sh
-
-
-COPY --chmod=0755 ./assets/scripts/cron /tmp/xdebug-3.ini
 
 # -------------------------------------------------------------------------------------------------------
 

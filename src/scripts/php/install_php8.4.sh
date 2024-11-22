@@ -29,5 +29,5 @@ cat /tmp/general.ini >| /etc/php/8.4/fpm/conf.d/01-general.ini
 cat /tmp/general.ini >| /etc/php/8.4/cli/conf.d/01-general.ini
 cat /tmp/cli.ini >| /etc/php/8.4/cli/conf.d/01-general-cli.ini
 
-cp /tmp/xdebug.ini /etc/php/8.4/fpm/conf.d/20-xdebug.ini
-cp /tmp/xdebug.ini /etc/php/8.4/cli/conf.d/20-xdebug.ini
+cp /tmp/xdebug-3.ini /etc/php/8.4/fpm/conf.d/20-xdebug.ini
+cp /tmp/xdebug-3.ini /etc/php/8.4/cli/conf.d/20-xdebug.ini
