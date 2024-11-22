@@ -221,19 +221,18 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --ver
     && mkdir -p /var/www/.composer \
     && export COMPOSER_HOME="/var/www/.composer" \
     && chmod 755 /tmp/composer.phar \
-    && mv /tmp/composer.phar /usr/local/bin/composer
+    && mv /tmp/composer.phar /usr/local/bin/composer \
+    && chown -R 33:33 /var/www/.composer
 
 ## ***********************************************************************
 ##  NODE INSTALLATION
 ## ***********************************************************************
 
-RUN cd /tmp/scripts && bash install_node.sh
-
-
-RUN cd /var/www && npm install -g grunt-cli \
-    && cd /var/www && npm install grunt --save-dev \
-    && npm install -g --no-install-recommends yarn \
-    && chown -R www-data:www-data /var/www/.composer
+RUN cd /tmp/scripts && bash install_node.sh \
+    && mkdir /var/www/.npm   \
+    && npm config set cache /var/www/.npm \
+    && chown 33:33 /var/www/.npm -R \
+    && cd /var/www && npm install -g --no-install-recommends yarn
 
 
 RUN chown www-data:www-data -R /var/www/scripts && \

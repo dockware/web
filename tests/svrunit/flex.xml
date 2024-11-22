@@ -4,13 +4,17 @@
 
         <testsuite name="Defaults + Core Checks" group="core" dockerImage="dockware/flex:dev-main">
             <directory>./tests/core</directory>
-            <directory>./tests/packages/composer/v2</directory>
-            <directory>./tests/packages/php/php8.4</directory>
             <directory>./tests/node/v20</directory>
+            <directory>./tests/php/php8.4</directory>
+            <directory>./tests/tools/composer/v2</directory>
+        </testsuite>
+
+        <testsuite name="Recovery Mode works" group="core" dockerImage="dockware/flex:dev-main" dockerEnv="RECOVERY_MODE=1">
+            <directory>./tests/features/recovery-mode</directory>
         </testsuite>
 
         <testsuite name="flex:dev-main, Command Runner" group="command-runner" dockerImage="dockware/flex:dev-main" dockerCommandRunner="true">
-            <directory>./tests/command-runner</directory>
+            <directory>./tests/features/command-runner</directory>
         </testsuite>
 
         <testsuite name="ENV - Node Version Switch to 20" dockerImage="dockware/flex:dev-main" dockerEnv="NODE_VERSION=20">
@@ -22,8 +26,18 @@
         </testsuite>
 
         <testsuite name="PHP 8.4, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.4,XDEBUG_ENABLED=1">
-            <directory>./tests/packages/php/php8.4</directory>
-            <directory>./tests/packages/xdebug/xdebug3</directory>
+            <directory>./tests/php/php8.4</directory>
+            <directory>./tests/tools/xdebug/xdebug3</directory>
+        </testsuite>
+
+        <testsuite name="PHP 8.3, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.3,XDEBUG_ENABLED=1">
+            <directory>./tests/php/php8.3</directory>
+            <directory>./tests/tools/xdebug/xdebug3</directory>
+        </testsuite>
+
+        <testsuite name="PHP 8.2, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.2,XDEBUG_ENABLED=1">
+            <directory>./tests/php/php8.2</directory>
+            <directory>./tests/tools/xdebug/xdebug3</directory>
         </testsuite>
 
     </testsuites>

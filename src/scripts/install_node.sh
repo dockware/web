@@ -44,13 +44,7 @@ nvm use $DEFAULT_NODE_VERSION
 nvm alias default $DEFAULT_NODE_VERSION
 
 
-# -----------------------------------------------------------------------------------------
-# SET NPM CACHE
-npm config set cache /var/www/.npm
-
-
 # -----------------------------------------------------------
 # PERMISSIONS
 chown 33:33 /var/www/.nvm -R
-mkdir /var/www/.npm && chown 33:33 /var/www/.npm
 

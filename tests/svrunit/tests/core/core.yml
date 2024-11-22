@@ -19,13 +19,9 @@ commands:
     command: "vim --v"
     expected: "VIM - Vi IMproved"
 
-  #- name: "Grunt is installed"
-  #  command: "grunt --version"
-  #  expected: "grunt-cli v1"
-
- # - name: "YARN Dependency Manager exists"
- #   command: "echo SVRUNIT: $(yarn -v)"
- #   expected: "SVRUNIT: 1."
+  - name: "YARN Dependency Manager exists"
+    command: "echo SVRUNIT: $(yarn -v)"
+    expected: "SVRUNIT: 1."
 
   - name: "Permission: Verify 'www-data' has no shell login"
     command: "cat /etc/passwd"
