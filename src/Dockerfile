@@ -1,7 +1,7 @@
 # Official Dockware Image
-# Copyright 2022 dasistweb GmbH
+# Copyright 2025 dasistweb GmbH
 #
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 LABEL title="Dockware flex:latest" \
       version="1.8.0" \
       maintainer="dasistweb GmbH"
@@ -34,8 +34,8 @@ RUN echo "export TZ=${TZ}" >> /etc/profile \
  && echo "export SHOP_DOMAIN=${SHOP_DOMAIN}" >> /etc/profile \
  && echo "export RECOVERY_MODE=${RECOVERY_MODE}" >> /etc/profile
 
-COPY ./config/php/general.ini /tmp/general.ini
-COPY ./config/php/cli.ini /tmp/cli.ini
+COPY --chmod=0755 ./config/php/general.ini /tmp/general.ini
+COPY --chmod=0755 ./config/php/cli.ini /tmp/cli.ini
 
 ENV SSH_USER not-set
 ENV SSH_PWD not-set
@@ -46,512 +46,163 @@ ENV XDEBUG_ENABLED 0
 ENV FILEBEAT_ENABLED 0
 ENV TIDEWAYS_KEY not-set
 ENV TIDEWAYS_ENV production
+ENV BASH_ENV /var/www/.bashrc
+ENV SW_API_ACCESS_KEY 'not-set'
 
-COPY ./config/tideways/tideways.ini /tmp/tideways.ini
+COPY --chmod=0755 ./config/tideways/tideways.ini /tmp/tideways.ini
+COPY --chmod=0755 ./scripts /tmp/scripts
+
+COPY --chmod=0755 ./assets/scripts/makefile /var/www/makefile
+COPY --chmod=0755 ./assets/scripts/bin /var/www/scripts/bin
+COPY --chmod=0755 ./assets/scripts/cron /var/www/scripts/cron
+COPY --chmod=0755 entrypoint.sh /entrypoint.sh
+
+# -------------------------------------------------------------------------------------------------------
+
 
 RUN echo "export SSH_USER=${SSH_USER}" >> /etc/profile \
- && echo "export SSH_PWD=${SSH_PWD}" >> /etc/profile \
- && echo "export XDEBUG_ENABLED=${XDEBUG_ENABLED}" >> /etc/profile \
- && echo "export XDEBUG_REMOTE_HOST=${XDEBUG_REMOTE_HOST}" >> /etc/profile \
- && echo "export XDEBUG_CONFIG=${XDEBUG_CONFIG}" >> /etc/profile \
- && echo "export PHP_IDE_CONFIG=${PHP_IDE_CONFIG}" >> /etc/profile \
- && echo "export FILEBEAT_ENABLED=${FILEBEAT_ENABLED}" >> /etc/profile \
- && echo "export TIDEWAYS_KEY=${TIDEWAYS_KEY}" >> /etc/profile \
- && echo "export TIDEWAYS_ENV=${TIDEWAYS_ENV}" >> /etc/profile
+    && echo "export SSH_PWD=${SSH_PWD}" >> /etc/profile \
+    && echo "export XDEBUG_ENABLED=${XDEBUG_ENABLED}" >> /etc/profile \
+    && echo "export XDEBUG_REMOTE_HOST=${XDEBUG_REMOTE_HOST}" >> /etc/profile \
+    && echo "export XDEBUG_CONFIG=${XDEBUG_CONFIG}" >> /etc/profile \
+    && echo "export PHP_IDE_CONFIG=${PHP_IDE_CONFIG}" >> /etc/profile \
+    && echo "export FILEBEAT_ENABLED=${FILEBEAT_ENABLED}" >> /etc/profile \
+    && echo "export TIDEWAYS_KEY=${TIDEWAYS_KEY}" >> /etc/profile \
+    && echo "export TIDEWAYS_ENV=${TIDEWAYS_ENV}" >> /etc/profile \
+    && echo "export SW_API_ACCESS_KEY=${SW_API_ACCESS_KEY}" >> /etc/profile
 
-ENV SW_API_ACCESS_KEY 'not-set'
-RUN echo "export SW_API_ACCESS_KEY=${SW_API_ACCESS_KEY}" >> /etc/profile
-
-## ***********************************************************************
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ##  BASE REQUIREMENTS
-## ***********************************************************************
-RUN apt-get update \
-    && apt-get install -y wget gnupg2 sudo \
-    && wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
-    && apt-get install -y apt-transport-https \
-    && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list \
-    && sudo echo 'deb https://packages.tideways.com/apt-packages-main any-version main' | sudo tee /etc/apt/sources.list.d/tideways.list \
-    && sudo wget -qO - https://packages.tideways.com/key.gpg | sudo apt-key add
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RUN apt-get update && \
+    # first install tools to add repositories
+    apt-get install -y wget gnupg2 sudo apt-transport-https software-properties-common && \
+    LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php && \
+    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
+    echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list && \
+    sudo echo 'deb [signed-by=/usr/share/keyrings/tideways.gpg] https://packages.tideways.com/apt-packages-main any-version main' | sudo tee /etc/apt/sources.list.d/tideways.list && \
+    wget -qO - 'https://packages.tideways.com/key.gpg' | gpg --dearmor | sudo tee /usr/share/keyrings/tideways.gpg > /dev/null && \
+    # update our repositories
+    apt-get update && \
+    # now have fun installing stuff
+    apt-get install -y  gosu \
+                        curl \
+                        unzip \
+                        bzip2 \
+                        ssmtp \
+                        lsof \
+                        openssh-server \
+                        cron \
+                        vim \
+                        nano \
+                        jq \
+                        gpg-agent \
+                        rsync \
+                        sshpass \
+                        jpegoptim \
+                        screen \
+                        mysql-client \
+                        git \
+                        chromium-browser \
+                        filebeat && \
+    mkdir /var/run/sshd && \
+    # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog
+    ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
+    echo "Europe/Berlin" > /etc/timezone
 
-RUN apt-get update
 
-RUN echo "" \
-        && apt-get install -y gosu \
-                            curl \
-                            unzip \
-                            bzip2 \
-                            ssmtp \
-                            lsof \
-                            openssh-server \
-                            cron \
-                            vim \
-                            nano \
-                            jq \
-                            gpg-agent \
-                            chromium-browser \
-    && mkdir /var/run/sshd \
-    # TIMEZONE SETTINGS
-    # otherwise we would have an interactive input dialog
-    && ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime \
-    && echo "Europe/Berlin" > /etc/timezone \
-            && apt-get install -y libsodium-dev \
-                            php-dev \
-                            php-pear \
-    && pecl install -f libsodium \
-    && apt-get remove -y php-pear \
-    && apt-get remove -y php-dev \
-            && echo ""
-
-## ***********************************************************************
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ##  USER MANAGEMENT
-## ***********************************************************************
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # set easy root pwd for dev purpose
 RUN echo "root:root" | chpasswd \
     # set password for www-data, and also
     # avoid shell login (we have a separate user for that)
-    && echo 'www-data:www-data' | chpasswd \
-    && usermod -s /usr/sbin/nologin www-data \
+    echo 'www-data:www-data' | chpasswd && \
+    usermod -s /usr/sbin/nologin www-data && \
     # this option makes sure to avoid root SSH login
     # we just replace our lines with nothing
-    && sed -i 's/PermitRootLogin without-password//' /etc/ssh/sshd_config \
-    && sed -i 's/PermitRootLogin prohibit-password//' /etc/ssh/sshd_config \
+    sed -i 's/PermitRootLogin without-password//' /etc/ssh/sshd_config && \
+    sed -i 's/PermitRootLogin prohibit-password//' /etc/ssh/sshd_config && \
     # allow root and sudo group to run sudo without password
-    && sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' \
-    && sed -i /etc/sudoers -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g' \
+    sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    sed -i /etc/sudoers -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g'  &&\
     # remove include directory
-    && sed -i /etc/sudoers -re 's/^#includedir.*/## **Removed the include directive** ##"/g'
-
-## ***********************************************************************
-## creates a new user as www-data alias and adds it to the sudo group
-## along with privileges to run sudo without password
-## params:
-#       - string user
-#       - string pwd
-#       - bool sudo
-## ***********************************************************************
-RUN adduser --disabled-password --uid 5577 --gecos "" --ingroup www-data dockware \
-    && usermod -m -d /var/www dockware | true \
-    && echo "dockware:dockware" | chpasswd \
-        && usermod -a -G sudo dockware \
+    sed -i /etc/sudoers -re 's/^#includedir.*/## **Removed the include directive** ##"/g' && \
+    # add our dockware user
+    adduser --disabled-password --uid 5577 --gecos "" --ingroup www-data dockware && \
+    -m -d /var/www dockware | true && \
+    echo "dockware:dockware" | chpasswd && \
+    usermod -a -G sudo dockware && \
     # allow sudo without pwd and dont require tty (for entrypoint commands)
-    && echo "Defaults:dockware !requiretty" >> /etc/sudoers \
-        && sed -i 's/dockware:x:5577:33:/dockware:x:33:33:/g' /etc/passwd
-RUN echo 'AllowUsers dockware' >> /etc/ssh/sshd_config
+    echo "Defaults:dockware !requiretty" >> /etc/sudoers && \
+    sed -i 's/dockware:x:5577:33:/dockware:x:33:33:/g' /etc/passwd && \
+    echo 'AllowUsers dockware' >> /etc/ssh/sshd_config
 
-ENV BASH_ENV /var/www/.bashrc
 
-RUN echo "source /var/www/.nvm/nvm.sh" >> /var/www/.bashrc \
-    # -------------------------------------------------
-    && chown 33:33 /var/www/.bashrc \
-    # -------------------------------------------------
-    && echo "export BASH_ENV=${BASH_ENV}" >> /etc/profile
-
-## ***********************************************************************
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ##  APACHE INSTALLATION
-## ***********************************************************************
-#this conf is needed for enconf command ...
-ADD ./config/apache/http2.conf /etc/apache2/conf-available/http2.conf
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RUN apt-get install -y apache2 libapache2-mod-fcgid
 
-RUN apt-get install -y apache2 \
-                            libapache2-mod-fcgid \
-                            software-properties-common \
-    && LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php \
-    && a2enmod headers \
-    && a2enmod rewrite \
-    && a2enmod expires \
-    && a2enmod proxy \
-    && a2enmod proxy_http \
-    && a2enmod proxy_wstunnel \
-    && a2enmod actions \
-    && a2enmod fcgid \
-    && a2enmod alias \
-    && a2enmod proxy_fcgi \
-    && a2enmod http2 \
-    && sudo a2enconf http2 \
-    && sudo a2dismod mpm_prefork > /dev/null 2>&1 \
-    && sudo a2enmod mpm_event > /dev/null 2>&1
+# immediately after installing apache, we have to overwrite the default configuration before proceeding with a2enmod
+COPY --chmod=0755 ./config/apache/http2.conf /etc/apache2/conf-available/http2.conf
+COPY --chmod=0755 ./config/apache/apache2.conf /etc/apache2/apache2.conf
+COPY --chmod=0755 ./config/apache/ports.conf /etc/apache2/ports.conf
+COPY --chmod=0755 ./config/apache/sites.conf /etc/apache2/sites-enabled/000-default.conf
 
-ADD ./config/apache/apache2.conf /etc/apache2/apache2.conf
-ADD ./config/apache/ports.conf /etc/apache2/ports.conf
-ADD ./config/apache/sites.conf /etc/apache2/sites-enabled/000-default.conf
+RUN a2enmod headers && \
+    a2enmod rewrite && \
+    a2enmod expires && \
+    a2enmod proxy && \
+    a2enmod proxy_http && \
+    a2enmod proxy_wstunnel && \
+    a2enmod actions && \
+    a2enmod fcgid && \
+    a2enmod alias && \
+    a2enmod proxy_fcgi && \
+    a2enmod http2 && \
+    sudo a2enconf http2 && \
+    sudo a2dismod mpm_prefork > /dev/null 2>&1 && \
+    sudo a2enmod mpm_event > /dev/null 2>&1 && \
+    # remove the standard apache index file
+    mkdir -p /var/www/html && \
+    rm -rf /var/www/html/* && \
+    chown -R www-data:www-data /var/www/html && \
+    sudo -u www-data sh -c 'mkdir -p /var/www/html/public'  && \
+    # make sure the configured log folder exists and is writeable
+    chmod -R 0777 /var/www && \
+    chgrp -R www-data /var/log/apache2 && \
+    mkdir -p /var/log/mysql && \
+    chgrp -R www-data /var/log/mysql &&\
+    mkdir /var/log/php -p  && \
+    touch /var/log/php/cli_errors.log && \
+    touch /var/log/php/fpm_errors.log && \
+    chown -R www-data:www-data /var/log/php && \
+    chmod 0755 /var/log/php
+
+
+
 
 # create a new id_rsa for the www-data dockeruser.
 # thus we have a SSH Key for connections out of the box
+RUN mkdir -p /var/www/.ssh && \
+    rm -rf /var/www/.ssh/id_rsa; true && \
+    rm -rf /var/www/.ssh/id_rsa.pub; true && \
+    ssh-keygen -t rsa -b 4096 -f /var/www/.ssh/id_rsa -C "Dockware Container" -P "" && \
+    chown -R www-data:www-data /var/www/.ssh && \
+    chmod 0700 /var/www/.ssh
 
-RUN mkdir -p /var/www/.ssh \
-    && rm -rf /var/www/.ssh/id_rsa; true  \
-    && rm -rf /var/www/.ssh/id_rsa.pub; true  \
-    && ssh-keygen -t rsa -b 4096 -f /var/www/.ssh/id_rsa -C "Dockware Container" -P ""  \
-    && chown -R www-data:www-data /var/www/.ssh \
-    && chmod 0700 /var/www/.ssh
 
-## ***********************************************************************
+
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ##  PHP INSTALLATION
-## ***********************************************************************
-RUN echo "" \
-    && apt-get install -y php8.4-fpm \
-                            php8.4-gd \
-                            php8.4-iconv \
-                            php8.4-intl \
-                            php8.4-xml \
-                            php8.4-mbstring \
-                            php8.4-pdo \
-                            php8.4-mysql \
-                            php8.4-curl \
-                            php8.4-cli \
-                            php8.4-ldap \
-                            php8.4-pgsql \
-                            php8.4-gettext \
-                            php8.4-zip \
-                            php8.4-soap \
-                            php8.4-bcmath \
-                            php8.4-imap \
-                            php8.4-xdebug \
-                            php8.4-redis \
-                            php8.4-amqp \
-                            php8.4-apcu \
-                            php8.4-pcov \
-                            php8.4-mongo \
-                            dh-php \
-    # shopware required pcre
-                            libpcre3 libpcre3-dev \
-&& cat /tmp/general.ini >| /etc/php/8.4/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/8.4/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/8.4/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php8.3-fpm \
-                            php8.3-gd \
-                            php8.3-iconv \
-                            php8.3-intl \
-                            php8.3-xml \
-                            php8.3-mbstring \
-                            php8.3-pdo \
-                            php8.3-mysql \
-                            php8.3-curl \
-                            php8.3-cli \
-                            php8.3-ldap \
-                            php8.3-pgsql \
-                            php8.3-gettext \
-                            php8.3-zip \
-                            php8.3-soap \
-                            php8.3-bcmath \
-                            php8.3-imap \
-                            php8.3-xdebug \
-                            php8.3-redis \
-                            php8.3-amqp \
-                            php8.3-apcu \
-                            php8.3-pcov \
-                            php8.3-mongo \
-                            dh-php \
-    # shopware required pcre
-                            libpcre3 libpcre3-dev \
-&& cat /tmp/general.ini >| /etc/php/8.3/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/8.3/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/8.3/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php8.2-fpm \
-                            php8.2-gd \
-                            php8.2-iconv \
-                            php8.2-intl \
-                            php8.2-xml \
-                            php8.2-mbstring \
-                            php8.2-pdo \
-                            php8.2-mysql \
-                            php8.2-curl \
-                            php8.2-cli \
-                            php8.2-ldap \
-                            php8.2-pgsql \
-                            php8.2-gettext \
-                            php8.2-zip \
-                            php8.2-soap \
-                            php8.2-bcmath \
-                            php8.2-imap \
-                            php8.2-redis \
-                            php8.2-amqp \
-                            php8.2-apcu \
-                            php8.2-pcov \
-                            php8.2-mongo \
-                            dh-php \
-    # shopware required pcre
-                            libpcre3 libpcre3-dev \
-&& cat /tmp/general.ini >| /etc/php/8.2/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/8.2/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/8.2/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php8.1-fpm \
-                            php8.1-gd \
-                            php8.1-iconv \
-                            php8.1-intl \
-    #&& apt-get install -y php8.1-json \
-                            php8.1-xml \
-                            php8.1-mbstring \
-                            php8.1-pdo \
-                            php8.1-mysql \
-                            php8.1-apc \
-                            php8.1-apcu \
-                            php8.1-curl \
-                            php8.1-cli \
-                            php8.1-ldap \
-                            php8.1-pgsql \
-                            php8.1-gettext \
-                            php8.1-zip \
-                            php8.1-soap \
-                            php8.1-bcmath \
-                            php8.1-redis \
-                            php8.1-imap \
-                            php8.1-ssh2 \
-                            php8.1-pcov \
-                            php8.1-mongo \
-                            dh-php \
-    #&& apt-get install -y php8.1-geoip \ not available for 8.1
-                            php8.1-amqp \
-    # shopware required pcre
-                            libpcre3 libpcre3-dev \
-&& cat /tmp/general.ini >| /etc/php/8.1/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/8.1/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/8.1/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php8.0-fpm \
-                            php8.0-gd \
-                            php8.0-iconv \
-                            php8.0-intl \
-    #&& apt-get install -y php8.0-json \
-                            php8.0-xml \
-                            php8.0-mbstring \
-                            php8.0-pdo \
-                            php8.0-mysql \
-                            php8.0-apc \
-                            php8.0-apcu \
-                            php8.0-curl \
-                            php8.0-cli \
-                            php8.0-ldap \
-                            php8.0-pgsql \
-                            php8.0-gettext \
-                            php8.0-zip \
-                            php8.0-soap \
-                            php8.0-bcmath \
-                            php8.0-redis \
-                            php8.0-imap \
-                            php8.0-ssh2 \
-                            php8.0-pcov \
-                            php8.0-mongo \
-                            dh-php \
-#                            php8.0-geoip \ not available for 8.0
-                            php8.0-amqp \
-    # shopware required pcre
-                            libpcre3 libpcre3-dev \
-&& cat /tmp/general.ini >| /etc/php/8.0/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/8.0/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/8.0/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php7.4-fpm \
-                            php7.4-gd \
-    #make sure mbstring is installed BEFORE iconv see: https://github.com/dockware/dockware/issues/36 => https://github.com/docker-library/php/issues/240#issuecomment-355489551
-                            php7.4-mbstring \
-                            php7.4-iconv \
-                            php7.4-intl \
-                            php7.4-json \
-                            php7.4-xml \
-                            php7.4-pdo \
-                            php7.4-mysql \
-                            php7.4-apcu \
-                            php7.4-apc \
-                            php7.4-curl \
-                            php7.4-cli \
-                            php7.4-ldap \
-                            php7.4-pgsql \
-                            php7.4-gettext \
-                            php7.4-zip \
-                            php7.4-soap \
-                            php7.4-bcmath \
-                            php7.4-redis \
-                            php7.4-imap \
-                            php7.4-ssh2 \
-                            php7.4-pcov \
-                            php7.4-mongo \
-                            dh-php \
-                            php7.4-geoip \
-                            php7.4-amqp \
-    # shopware required pcre
-                            libpcre3 libpcre3-dev \
-&& cat /tmp/general.ini >| /etc/php/7.4/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/7.4/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/7.4/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php7.3-fpm \
-                            php7.3-apc \
-                            php7.3-apcu \
-                            php7.3-curl \
-                            php7.3-cli \
-                            php7.3-gd \
-                            php7.3-json \
-                            php7.3-ldap \
-                            php7.3-mysql \
-                            php7.3-pgsql \
-                            php7.3-gettext \
-                            php7.3-intl \
-                            php7.3-xml \
-                            php7.3-mysql \
-                            php7.3-mbstring \
-                            php7.3-zip \
-                            php7.3-soap \
-                            php7.3-memcached \
-                            php7.3-redis \
-                            php7.3-bcmath \
-                            php7.3-imap \
-                            php7.3-ssh2 \
-                            php7.3-pcov \
-                            dh-php \
-                            php7.3-geoip \
-                            php7.3-amqp \
-                            php7.3-mongo \
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-&& cat /tmp/general.ini >| /etc/php/7.3/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/7.3/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/7.3/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php7.2-fpm \
-                            php7.2-apc \
-                            php7.2-apcu \
-                            php7.2-curl \
-                            php7.2-cli \
-                            php7.2-gd \
-                            php7.2-json \
-                            php7.2-ldap \
-                            php7.2-mysql \
-                            php7.2-pgsql \
-                            php7.2-gettext \
-                            php7.2-intl \
-                            php7.2-xml \
-                            php7.2-mysql \
-                            php7.2-mbstring \
-                            php7.2-zip \
-                            php7.2-soap \
-                            php7.2-memcached \
-                            php7.2-redis \
-                            php7.2-bcmath \
-                            php7.2-imap \
-                            php7.2-ssh2 \
-                            php7.2-pcov \
-                            dh-php \
-                            php7.2-geoip \
-                            php7.2-amqp \
-                            php7.2-mongo \
+RUN cd /tmp/scripts && sh install_php.sh
 
-&& cat /tmp/general.ini >| /etc/php/7.2/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/7.2/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/7.2/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php7.1-fpm \
-                            php7.1-apc \
-                            php7.1-apcu \
-                            php7.1-curl \
-                            php7.1-cli \
-                            php7.1-gd \
-                            php7.1-json \
-                            php7.1-ldap \
-                            php7.1-mysql \
-                            php7.1-pgsql \
-                            php7.1-gettext \
-                            php7.1-intl \
-                            php7.1-xml \
-                            php7.1-mysql \
-                            php7.1-mbstring \
-                            php7.1-zip \
-                            php7.1-soap \
-                            php7.1-memcached \
-                            php7.1-redis \
-                            php7.1-bcmath \
-                            php7.1-imap \
-                            php7.1-ssh2 \
-                            php7.1-pcov \
-                            dh-php \
-                            php7.1-geoip \
-                            php7.1-amqp \
-                            php7.1-mongo \
 
-&& cat /tmp/general.ini >| /etc/php/7.1/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/7.1/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/7.1/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php7.0-fpm \
-                            php7.0-apc \
-                            php7.0-apcu \
-                            php7.0-curl \
-                            php7.0-cli \
-                            php7.0-gd \
-                            php7.0-json \
-                            php7.0-ldap \
-                            php7.0-mysql \
-                            php7.0-pgsql \
-                            php7.0-gettext \
-                            php7.0-intl \
-                            php7.0-xml \
-                            php7.0-mysql \
-                            php7.0-mbstring \
-                            php7.0-zip \
-                            php7.0-soap \
-                            php7.0-memcached \
-                            php7.0-redis \
-                            php7.0-bcmath \
-                            php7.0-imap \
-                            php7.0-ssh2 \
-                            dh-php \
-                            php7.0-geoip \
-                            php7.0-amqp \
-                            php7.0-mongo \
-&& cat /tmp/general.ini >| /etc/php/7.0/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/7.0/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/7.0/cli/conf.d/01-general-cli.ini \
-    && apt-get install -y php5.6-fpm \
-                            php5.6-apc \
-                            php5.6-apcu \
-                            php5.6-curl \
-                            php5.6-cli \
-                            php5.6-gd \
-                            php5.6-json \
-                            php5.6-ldap \
-                            php5.6-mysql \
-                            php5.6-pgsql \
-                            php5.6-gettext \
-                            php5.6-intl \
-                            php5.6-xml \
-                            php5.6-mysql \
-                            php5.6-mbstring \
-                            php5.6-zip \
-                            php5.6-soap \
-                            php5.6-memcached \
-                            php5.6-redis \
-                            php5.6-bcmath \
-                            php5.6-imap \
-                            php5.6-ssh2 \
-                            dh-php \
-                            php5.6-geoip \
-                            php5.6-amqp \
-                            php5.6-mongo \
-&& cat /tmp/general.ini >| /etc/php/5.6/fpm/conf.d/01-general.ini \
-&& cat /tmp/general.ini >| /etc/php/5.6/cli/conf.d/01-general.ini \
-&& cat /tmp/cli.ini >| /etc/php/5.6/cli/conf.d/01-general-cli.ini \
-# remove pecl again
-&& apt-get remove -y dh-php
-
-#make sure the installation runs also in default php version
-RUN sudo update-alternatives --set php /usr/bin/php7.4 > /dev/null 2>&1 &
-# make sure the installation runs using our default php version
-RUN service php7.4-fpm stop > /dev/null 2>&1 && \
-    service php7.4-fpm start && \
-    sudo update-alternatives --set php /usr/bin/php7.4 > /dev/null 2>&1 \
-
-# make sure our php user has rights on the session
-&& chown www-data:www-data -R /var/lib/php/sessions
-
-# remove the standard apache index file
-RUN mkdir -p /var/www/html \
-    && rm -rf /var/www/html/* \
-    && chown -R www-data:www-data /var/www/html \
-    && sudo -u www-data sh -c 'mkdir -p /var/www/html/public'
-
-# make sure the configured log folder exists and is writeable
-RUN chmod -R 0777 /var/www \
-    && chgrp -R www-data /var/log/apache2 \
-    && mkdir -p /var/log/mysql \
-    && chgrp -R www-data /var/log/mysql\
-    && mkdir /var/log/php -p  \
-    && touch /var/log/php/cli_errors.log  \
-    && touch /var/log/php/fpm_errors.log  \
-    && chown -R www-data:www-data /var/log/php  \
-    && chmod 0755 /var/log/php
 
 ## ***********************************************************************
 ##  MOD_SSL
@@ -562,15 +213,7 @@ RUN apt-get install -y openssl \
     && mkdir /etc/apache2/ssl \
     && openssl req -new -x509 -days 365 -sha1 -newkey rsa:2048 -nodes -keyout /etc/apache2/ssl/server.key -out /etc/apache2/ssl/server.crt -subj '/O=Company/OU=Department/CN=localhost'
 
-RUN echo "" \
 
-    && apt-get install -y rsync \
-                            sshpass \
-                            jpegoptim \
-                            screen \
-                            mysql-client \
-
-    && apt-get install -y git
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --version=2.2.9 --quiet \
     # prepare "global" composer directory for www-data
@@ -579,361 +222,26 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --ver
     && chmod 755 /tmp/composer.phar \
     && mv /tmp/composer.phar /usr/local/bin/composer
 
-RUN cd /var/www \
-    # install xdebug for php 8.3
-    && sudo apt-get install -y php8.3-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/3.3.2.zip \
-    && unzip 3.3.2.zip \
-    && rm -rf 3.3.2.zip \
-    && mv xdebug-3.3.2 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize8.3 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config8.3 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20230831/xdebug_8.3.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize8.3 --clean \
-    && sudo apt-get remove -y php8.3-dev \
-    # install xdebug for php 8.2
-    && sudo apt-get install -y php8.2-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/3.2.0.zip \
-    && unzip 3.2.0.zip \
-    && rm -rf 3.2.0.zip \
-    && mv xdebug-3.2.0 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize8.2 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config8.2 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20220829/xdebug_8.2.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize8.2 --clean \
-    && sudo apt-get remove -y php8.2-dev \
-    # install xdebug for php 8.1
-    && sudo apt-get install -y php8.1-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/3.1.4.zip \
-    && unzip 3.1.4.zip \
-    && rm -rf 3.1.4.zip \
-    && mv xdebug-3.1.4 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize8.1 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config8.1 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20210902/xdebug_8.1.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize8.1 --clean \
-    && sudo apt-get remove -y php8.1-dev \
-    # install xdebug for php 8.0
-    && sudo apt-get install -y php8.0-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/3.1.4.zip \
-    && unzip 3.1.4.zip \
-    && rm -rf 3.1.4.zip \
-    && mv xdebug-3.1.4 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize8.0 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config8.0 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20200930/xdebug_8.0.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize8.0 --clean \
-    && sudo apt-get remove -y php8.0-dev \
-    # install xdebug for php 7.4
-    && sudo apt-get install -y php7.4-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/3.1.4.zip \
-    && unzip 3.1.4.zip \
-    && rm -rf 3.1.4.zip \
-    && mv xdebug-3.1.4 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize7.4 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config7.4 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20190902/xdebug_7.4.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize7.4 --clean \
-    && sudo apt-get remove -y php7.4-dev \
-    # install xdebug for php 7.3
-    && sudo apt-get install -y php7.3-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/3.1.4.zip \
-    && unzip 3.1.4.zip \
-    && rm -rf 3.1.4.zip \
-    && mv xdebug-3.1.4 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize7.3 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config7.3 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20180731/xdebug_7.3.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize7.3 --clean \
-    && sudo apt-get remove -y php7.3-dev \
-    # install xdebug for php 7.2
-    && sudo apt-get install -y php7.2-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/3.1.4.zip \
-    && unzip 3.1.4.zip \
-    && rm -rf 3.1.4.zip \
-    && mv xdebug-3.1.4 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize7.2 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config7.2 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20170718/xdebug_7.2.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize7.2 --clean \
-    && sudo apt-get remove -y php7.2-dev \
-    # install xdebug for php 7.1
-    && sudo apt-get install -y php7.1-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/2.7.2.zip \
-    && unzip 2.7.2.zip \
-    && rm -rf 2.7.2.zip \
-    && mv xdebug-2.7.2 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize7.1 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config7.1 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20160303/xdebug_7.1.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize7.1 --clean \
-    && sudo apt-get remove -y php7.1-dev \
-    # install xdebug for php 7.0
-    && sudo apt-get install -y php7.0-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/2.7.2.zip \
-    && unzip 2.7.2.zip \
-    && rm -rf 2.7.2.zip \
-    && mv xdebug-2.7.2 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize7.0 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config7.0 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20151012/xdebug_7.0.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize7.0 --clean \
-    && sudo apt-get remove -y php7.0-dev \
-    # install xdebug for php 5.6
-    && sudo apt-get install -y php5.6-dev \
-    && cd /var/www \
-    && rm -rf xdebug \
-    && wget https://github.com/xdebug/xdebug/archive/refs/tags/XDEBUG_2_5_5.zip \
-    && unzip XDEBUG_2_5_5.zip \
-    && rm -rf XDEBUG_2_5_5.zip \
-    && mv xdebug-XDEBUG_2_5_5 xdebug \
-    && cd /var/www/xdebug \
-    && sudo phpize5.6 \
-    && sudo ./configure --with-php-config=/usr/bin/php-config5.6 \
-    && sudo make \
-    && sudo cp /var/www/xdebug/modules/xdebug.so /usr/lib/php/20131226/xdebug_5.6.so \
-    && make clean \
-    && make distclean \
-    && sudo phpize5.6 --clean \
-    && sudo apt-get remove -y php5.6-dev \
-&& sudo apt-get install -y zlib1g-dev \
-&& sudo rm -rf /var/www/xdebug
-#generate xdebug ini files
 
-COPY ./config/php/xdebug-3.ini /etc/php/8.3/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-3.ini /etc/php/8.3/cli/conf.d/20-xdebug.ini
 
-COPY ./config/php/xdebug-3.ini /etc/php/8.2/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-3.ini /etc/php/8.2/cli/conf.d/20-xdebug.ini
+## ***********************************************************************
+##  NODE INSTALLATION
+## ***********************************************************************
 
-COPY ./config/php/xdebug-3.ini /etc/php/8.1/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-3.ini /etc/php/8.1/cli/conf.d/20-xdebug.ini
+RUN cd /tmp/scripts && sh install_node.sh
 
-COPY ./config/php/xdebug-3.ini /etc/php/8.0/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-3.ini /etc/php/8.0/cli/conf.d/20-xdebug.ini
+RUN echo "source /var/www/.nvm/nvm.sh" >> /var/www/.bashrc \
+    # -------------------------------------------------
+    && chown 33:33 /var/www/.bashrc \
+    # -------------------------------------------------
+    && echo "export BASH_ENV=${BASH_ENV}" >> /etc/profile
 
-COPY ./config/php/xdebug-3.ini /etc/php/7.4/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-3.ini /etc/php/7.4/cli/conf.d/20-xdebug.ini
 
-COPY ./config/php/xdebug-3.ini /etc/php/7.3/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-3.ini /etc/php/7.3/cli/conf.d/20-xdebug.ini
-
-COPY ./config/php/xdebug-3.ini /etc/php/7.2/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-3.ini /etc/php/7.2/cli/conf.d/20-xdebug.ini
-
-COPY ./config/php/xdebug-2.ini /etc/php/7.1/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-2.ini /etc/php/7.1/cli/conf.d/20-xdebug.ini
-
-COPY ./config/php/xdebug-2.ini /etc/php/7.0/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-2.ini /etc/php/7.0/cli/conf.d/20-xdebug.ini
-
-COPY ./config/php/xdebug-2.ini /etc/php/5.6/fpm/conf.d/20-xdebug.ini
-COPY ./config/php/xdebug-2.ini /etc/php/5.6/cli/conf.d/20-xdebug.ini
-
-RUN cd /var/www \
-
-&& sed -i 's/__PHP__FOLDER__ID/20230831/g' /etc/php/8.3/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/8.3/g' /etc/php/8.3/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20230831/g' /etc/php/8.3/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/8.3/g' /etc/php/8.3/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20220829/g' /etc/php/8.2/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/8.2/g' /etc/php/8.2/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20220829/g' /etc/php/8.2/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/8.2/g' /etc/php/8.2/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20210902/g' /etc/php/8.1/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/8.1/g' /etc/php/8.1/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20210902/g' /etc/php/8.1/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/8.1/g' /etc/php/8.1/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20200930/g' /etc/php/8.0/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/8.0/g' /etc/php/8.0/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20200930/g' /etc/php/8.0/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/8.0/g' /etc/php/8.0/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20190902/g' /etc/php/7.4/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.4/g' /etc/php/7.4/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20190902/g' /etc/php/7.4/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.4/g' /etc/php/7.4/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20180731/g' /etc/php/7.3/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.3/g' /etc/php/7.3/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20180731/g' /etc/php/7.3/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.3/g' /etc/php/7.3/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20170718/g' /etc/php/7.2/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.2/g' /etc/php/7.2/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20170718/g' /etc/php/7.2/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.2/g' /etc/php/7.2/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20160303/g' /etc/php/7.1/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.1/g' /etc/php/7.1/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20160303/g' /etc/php/7.1/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.1/g' /etc/php/7.1/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20151012/g' /etc/php/7.0/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.0/g' /etc/php/7.0/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20151012/g' /etc/php/7.0/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/7.0/g' /etc/php/7.0/cli/conf.d/20-xdebug.ini \
-
-&& sed -i 's/__PHP__FOLDER__ID/20131226/g' /etc/php/5.6/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/5.6/g' /etc/php/5.6/fpm/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP__FOLDER__ID/20131226/g' /etc/php/5.6/cli/conf.d/20-xdebug.ini \
-    && sed -i 's/__PHP_VERSION__/5.6/g' /etc/php/5.6/cli/conf.d/20-xdebug.ini \
-
- && cd /var/www
-
-RUN apt-get install -y filebeat
-
-RUN ls -la \
-    && mkdir "/var/www/.nvm" \
-    && export NVM_DIR="/var/www/.nvm" \
-    # -----------------------------------------------------------------------------------------
-    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash \
-    # -----------------------------------------------------------------------------------------
-    && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" \
-    && [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  \
-    # -----------------------------------------------------------------------------------------
-    && nvm install 20 \
-    && nvm install 18 \
-    && nvm install 16 \
-    && nvm install 14 \
-    && nvm install 12 \
-    # -----------------------------------------------------------------------------------------
-    # we have to install yarn in additional node versions
-    # otherwise it won't be found after a nvm switch
-    && nvm use 20 && npm install -g yarn \
-    && nvm use 18 && npm install -g yarn \
-    && nvm use 16 && npm install -g yarn \
-    && nvm use 14 && npm install -g yarn \
-    && nvm use 12 && npm install -g yarn \
-    # -----------------------------------------------------------------------------------------
-    && nvm use 12 \
-    && nvm alias default 12  \
-    # -----------------------------------------------------------------------------------------
-    && echo ""
-
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
-
-RUN echo "" \
-    # -----------------------------------------------------------
-    # we have to reload the correct nvm version otherwise this would destroy it
-    && export NVM_DIR="/var/www/.nvm" \
-    && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" \
-    && [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  \
-    && nvm use 12 \
-    # -----------------------------------------------------------
-    && mkdir /var/www/.npm \
-    && npm config set cache /var/www/.npm \
-    && chown 33:33 /var/www/.npm \
-
-    # navigate to another folder outside shopware to avoid this error: npm ERR! Tracker "idealTree" already exists
-    && cd /var/www && npm install -g grunt-cli \
-    && cd /var/www && npm install grunt --save-dev \
-
-    && npm install -g --no-install-recommends yarn \
-    && chown -R www-data:www-data /var/www/.composer \
-    && echo ""
-
-COPY ./assets/tideways/tideways-daemon /etc/init.d/tideways-daemon
-COPY ./config/tideways/tideways-daemon /etc/default/tideways-daemon
-RUN sudo apt-get -y install tideways-php tideways-daemon  \
-    && sudo chmod 0755 /etc/init.d/tideways-daemon \
-
-&& cat /tmp/tideways.ini >| /etc/php/8.4/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.4/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.3/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.3/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.2/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.2/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.1/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.1/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.0/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/8.0/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.4/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.4/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.3/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.3/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.2/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.2/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.1/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.1/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.0/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/7.0/cli/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/5.6/fpm/conf.d/20-tideways.ini \
-&& cat /tmp/tideways.ini >| /etc/php/5.6/cli/conf.d/20-tideways.ini \
-    && rm -rf /tmp/tideways.ini
-
-RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-
-COPY ./assets/scripts/makefile /var/www/makefile
-COPY ./assets/scripts/bin /var/www/scripts/bin
-COPY ./assets/scripts/cron /var/www/scripts/cron
-
-ADD entrypoint.sh /entrypoint.sh
 
 RUN chown www-data:www-data -R /var/www/scripts && \
     #make sure for the whole installation xdebug is off for performance
     sh /var/www/scripts/bin/xdebug_disable.sh && \
-    chmod 755 /*.sh
-
-RUN echo "" && \
+    chmod 755 /*.sh && \
     chown 33:33 -R /var/www/html && \
     mkdir -p /var/www/.npm && chown 33:33 /var/www/.npm -R && \
     # this is necessary so that our user can
@@ -958,3 +266,14 @@ WORKDIR /var/www/html
 ## ***********************************************************************
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+
+
+# TODO xdebug
+# TODO tidways
+#
+# navigate to another folder outside shopware to avoid this error: npm ERR! Tracker "idealTree" already exists
+#cd /var/www && npm install -g grunt-cli
+#cd /var/www && npm install grunt --save-dev
+#npm install -g --no-install-recommends yarn
+
+# chown -R www-data:www-data /var/www/.composer
