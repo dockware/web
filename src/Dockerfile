@@ -201,7 +201,7 @@ RUN apt-get install -y apache2 libapache2-mod-fcgid && \
 ##  PHP INSTALLATION
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-RUN cd /tmp/scripts && sh install_php.sh  && \
+RUN cd /tmp/scripts && bash install_php.sh  && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --version=2.2.9 --quiet && \
     # prepare "global" composer directory for www-data
     mkdir -p /var/www/.composer && \
