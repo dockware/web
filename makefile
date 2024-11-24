@@ -47,4 +47,4 @@ verify: ##3 Verify the configuration
 test: ##3 Runs all SVRUnit Test Suites for the provided image and tag
 	# php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --list-suites
 	# php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --list-groups
-	php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --debug --report-junit --report-html
+	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --debug --report-junit --report-html

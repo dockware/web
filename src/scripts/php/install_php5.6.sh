@@ -25,12 +25,3 @@ apt-get install -y  php5.6-fpm \
                     php5.6-amqp \
                     php5.6-xdebug \
                     php5.6-mongo
-
-
-cat /tmp/config/php/general.ini >| /etc/php/5.6/fpm/conf.d/01-general.ini
-cat /tmp/config/php/general.ini >| /etc/php/5.6/cli/conf.d/01-general.ini
-
-cat /tmp/config/php/cli.ini >| /etc/php/5.6/cli/conf.d/01-general-cli.ini
-
-cp /tmp/conifg/php/xdebug-3.ini /etc/php/5.6/fpm/conf.d/20-xdebug.ini
-cp /tmp/conifg/php/xdebug-3.ini /etc/php/5.6/cli/conf.d/20-xdebug.ini

@@ -1,19 +1,18 @@
 # Define the PHP version as a variable
 DEFAULT_PHP_VERSION=8.4
 
+PHP_VERSIONS=("8.4" "8.3" "8.2" "8.1" "8.0" "7.4" "7.3" "7.2" "7.1" "7.0" "5.6")
 
-sh ./php/install_php8.4.sh
-sh ./php/install_php8.3.sh
-sh ./php/install_php8.2.sh
-sh ./php/install_php8.1.sh
-sh ./php/install_php8.0.sh
-sh ./php/install_php7.4.sh
-sh ./php/install_php7.3.sh
-sh ./php/install_php7.2.sh
-sh ./php/install_php7.1.sh
-sh ./php/install_php7.0.sh
-sh ./php/install_php5.6.sh
+for version in "${PHP_VERSIONS[@]}"; do
+    sh ./php/install_php$version.sh
 
+    # add our required xdebug files
+    cat /tmp/config/php/general.ini >| /etc/php/$version/fpm/conf.d/01-general.ini
+    cat /tmp/config/php/general.ini >| /etc/php/$version/cli/conf.d/01-general.ini
+    cat /tmp/config/php/cli.ini >| /etc/php/$version/cli/conf.d/01-general-cli.ini
+    cp /tmp/config/php/xdebug-3.ini /etc/php/$version/fpm/conf.d/20-xdebug.ini
+    cp /tmp/config/php/xdebug-3.ini /etc/php/$version/cli/conf.d/20-xdebug.ini
+done
 
 
 # TODO i dont know about this

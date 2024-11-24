@@ -25,12 +25,3 @@ apt-get install -y  php7.0-fpm \
                     php7.0-amqp \
                     php7.0-xdebug \
                     php7.0-mongo
-
-
-cat /tmp/config/php/general.ini >| /etc/php/7.0/fpm/conf.d/01-general.ini
-cat /tmp/config/php/general.ini >| /etc/php/7.0/cli/conf.d/01-general.ini
-
-cat /tmp/config/php/cli.ini >| /etc/php/7.0/cli/conf.d/01-general-cli.ini
-
-cp /tmp/conifg/php/xdebug-3.ini /etc/php/7.0/fpm/conf.d/20-xdebug.ini
-cp /tmp/conifg/php/xdebug-3.ini /etc/php/7.0/cli/conf.d/20-xdebug.ini
