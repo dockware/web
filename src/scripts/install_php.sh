@@ -5,6 +5,14 @@ DEFAULT_PHP_VERSION=8.4
 sh ./php/install_php8.4.sh
 sh ./php/install_php8.3.sh
 sh ./php/install_php8.2.sh
+sh ./php/install_php8.1.sh
+sh ./php/install_php8.0.sh
+sh ./php/install_php7.4.sh
+sh ./php/install_php7.3.sh
+sh ./php/install_php7.2.sh
+sh ./php/install_php7.1.sh
+sh ./php/install_php7.0.sh
+sh ./php/install_php5.6.sh
 
 
 

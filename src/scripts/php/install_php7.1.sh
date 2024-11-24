@@ -24,4 +24,14 @@ apt-get install -y  php7.1-fpm \
                     dh-php \
                     php7.1-geoip \
                     php7.1-amqp \
+                    php7.1-xdebug \
                     php7.1-mongo
+
+
+cat /tmp/config/php/general.ini >| /etc/php/7.1/fpm/conf.d/01-general.ini
+cat /tmp/config/php/general.ini >| /etc/php/7.1/cli/conf.d/01-general.ini
+
+cat /tmp/config/php/cli.ini >| /etc/php/7.1/cli/conf.d/01-general-cli.ini
+
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/7.1/fpm/conf.d/20-xdebug.ini
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/7.1/cli/conf.d/20-xdebug.ini

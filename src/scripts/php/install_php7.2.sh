@@ -24,4 +24,16 @@ apt-get install -y  php7.2-fpm \
                     dh-php \
                     php7.2-geoip \
                     php7.2-amqp \
+                    php7.2-xdebug \
                     php7.2-mongo
+
+
+pecl install -2.6.1
+
+cat /tmp/config/php/general.ini >| /etc/php/7.2/fpm/conf.d/01-general.ini
+cat /tmp/config/php/general.ini >| /etc/php/7.2/cli/conf.d/01-general.ini
+
+cat /tmp/config/php/cli.ini >| /etc/php/7.2/cli/conf.d/01-general-cli.ini
+
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/7.2/fpm/conf.d/20-xdebug.ini
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/7.2/cli/conf.d/20-xdebug.ini

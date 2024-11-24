@@ -21,6 +21,15 @@
                     php8.0-ssh2 \
                     php8.0-pcov \
                     php8.0-mongo \
+                    php8.0-xdebug \
                     dh-php \
                     php8.0-amqp \
                     libpcre3 libpcre3-dev
+
+cat /tmp/config/php/general.ini >| /etc/php/8.0/fpm/conf.d/01-general.ini
+cat /tmp/config/php/general.ini >| /etc/php/8.0/cli/conf.d/01-general.ini
+
+cat /tmp/config/php/cli.ini >| /etc/php/8.0/cli/conf.d/01-general-cli.ini
+
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/8.0/fpm/conf.d/20-xdebug.ini
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/8.0/cli/conf.d/20-xdebug.ini

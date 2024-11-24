@@ -25,4 +25,14 @@ apt-get install -y  php7.4-fpm \
                     dh-php \
                     php7.4-geoip \
                     php7.4-amqp \
+                    php7.4-xdebug \
                     libpcre3 libpcre3-dev
+
+
+cat /tmp/config/php/general.ini >| /etc/php/7.4/fpm/conf.d/01-general.ini
+cat /tmp/config/php/general.ini >| /etc/php/7.4/cli/conf.d/01-general.ini
+
+cat /tmp/config/php/cli.ini >| /etc/php/7.4/cli/conf.d/01-general-cli.ini
+
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/7.4/fpm/conf.d/20-xdebug.ini
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/7.4/cli/conf.d/20-xdebug.ini

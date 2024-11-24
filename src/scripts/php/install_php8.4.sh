@@ -25,9 +25,10 @@ apt-get install -y  php8.4-fpm \
 
 pecl install xdebug-beta
 
-cat /tmp/general.ini >| /etc/php/8.4/fpm/conf.d/01-general.ini
-cat /tmp/general.ini >| /etc/php/8.4/cli/conf.d/01-general.ini
-cat /tmp/cli.ini >| /etc/php/8.4/cli/conf.d/01-general-cli.ini
+cat /tmp/config/php/general.ini >| /etc/php/8.4/fpm/conf.d/01-general.ini
+cat /tmp/config/php/general.ini >| /etc/php/8.4/cli/conf.d/01-general.ini
 
-cp /tmp/xdebug-3.ini /etc/php/8.4/fpm/conf.d/20-xdebug.ini
-cp /tmp/xdebug-3.ini /etc/php/8.4/cli/conf.d/20-xdebug.ini
+cat /tmp/config/php/cli.ini >| /etc/php/8.4/cli/conf.d/01-general-cli.ini
+
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/8.4/fpm/conf.d/20-xdebug.ini
+cp /tmp/conifg/php/xdebug-3.ini /etc/php/8.4/cli/conf.d/20-xdebug.ini
