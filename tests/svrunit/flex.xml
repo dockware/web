@@ -95,6 +95,10 @@
             <directory>./tests/features/restart-php</directory>
         </testsuite>
 
+        <testsuite name="Switch PHP Version" dockerImage="dockware/flex:dev-main">
+            <directory>./tests/features/switch-php</directory>
+        </testsuite>
+
     </testsuites>
 
 </svrunit>
