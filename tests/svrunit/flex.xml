@@ -41,7 +41,6 @@
             <directory>./tests/node/v20</directory>
         </testsuite>
 
-
         <!-- PHP -->
 
         <testsuite name="PHP 8.4, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.4,XDEBUG_ENABLED=1">
@@ -90,6 +89,10 @@
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
             <directory>./tests/tools/tideways/config</directory>
+        </testsuite>
+
+        <testsuite name="Restart PHP" dockerImage="dockware/flex:dev-main">
+            <directory>./tests/features/restart-php</directory>
         </testsuite>
 
     </testsuites>
