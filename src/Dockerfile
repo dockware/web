@@ -229,7 +229,7 @@ RUN echo "id:permissions" && \
     chown 33:33 -R /var/www/html && \
     # make sure for the whole installation xdebug is off for performance
     sh /var/www/scripts/bin/xdebug_disable.sh && \
-    rm -rf /dockware && \
+    rm -rf /dockware/tmp && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ## ***********************************************************************

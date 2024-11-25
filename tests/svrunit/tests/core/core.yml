@@ -56,3 +56,19 @@ file_exists:
   - name: "SSL Certificates exists"
     file: "/etc/apache2/ssl/server.crt"
     expected: 1
+
+  - name: "Version Meta file exists"
+    file: " /dockware/version.txt"
+    expected: 1
+
+  - name: "Tag Meta file exists"
+    file: " /dockware/tag.txt"
+    expected: 1
+
+  - name: "Copyright Meta file exists"
+    file: " /dockware/copyright.txt"
+    expected: 1
+
+  - name: "Build Date Meta file exists"
+    file: " /dockware/build-date.txt"
+    expected: 1

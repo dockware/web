@@ -32,7 +32,6 @@ build: ##2 Builds the image
 	@cd ./src && time DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=2.0.0 --build-arg IMAGE_TAG=dev-main -t dockware/flex:dev-main .
 
 analyze: ##2 Shows the size of the image
-	docker history dockware/flex:dev-main
 	rm -rf tmp-image.tar.gz | true
 	docker history --format "{{.CreatedBy}}\t\t{{.Size}}" dockware/flex:dev-main | grep -v "0B"
 	docker save -o tmp-image.tar dockware/flex:dev-main
