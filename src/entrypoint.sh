@@ -112,8 +112,9 @@ if [ $RECOVERY_MODE = 0 ]; then
       sudo service apache2 stop
       echo "-----------------------------------------------------------"
     fi
+    CURRENT_PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;")
 
-   if [ $COMPOSER_VERSION = 1 ]; then
+    if [ $COMPOSER_VERSION = 1 ]; then
        echo "DOCKWARE: switching to composer 1..."
        sudo composer self-update --1
        echo "-----------------------------------------------------------"
@@ -138,7 +139,8 @@ if [ $RECOVERY_MODE = 0 ]; then
 
     if [ $TIDEWAYS_KEY != "not-set" ]; then
         echo "DOCKWARE: activating Tideways...."
-        # TODO assign the API key
+        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_API_KEY__/'${TIDEWAYS_KEY}'/g' /etc/php/${CURRENT_PHP_VERSION}/fpm/conf.d/20-tideways.ini
+        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_API_KEY__/'${TIDEWAYS_KEY}'/g' /etc/php/${CURRENT_PHP_VERSION}/cli/conf.d/20-tideways.ini
         nohup sudo tideways-daemon --log=/var/log/tideways/daemon.log > /dev/null 2>&1 &
         ps aux | grep tideways-daemon
         echo "-----------------------------------------------------------"

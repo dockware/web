@@ -4,7 +4,7 @@
 
         <testsuite name="Defaults + Core Checks" group="core" dockerImage="dockware/flex:dev-main">
             <directory>./tests/core</directory>
-            <directory>./tests/node/v20</directory>
+            <directory>./tests/node/v22</directory>
             <directory>./tests/php/php8.4</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-off</directory>
@@ -29,12 +29,12 @@
 
         <!-- NODE -->
 
-        <testsuite name="ENV - Node Version Switch to 20" dockerImage="dockware/flex:dev-main" dockerEnv="NODE_VERSION=20">
-            <directory>./tests/node/v20</directory>
+        <testsuite name="ENV - Node Version Switch to 22" dockerImage="dockware/flex:dev-main" dockerEnv="NODE_VERSION=22">
+            <directory>./tests/node/v22</directory>
         </testsuite>
 
-        <testsuite name="ENV - Node Version Switch to 18" dockerImage="dockware/flex:dev-main" dockerEnv="NODE_VERSION=18">
-            <directory>./tests/node/v18</directory>
+        <testsuite name="ENV - Node Version Switch to 20" dockerImage="dockware/flex:dev-main" dockerEnv="NODE_VERSION=20">
+            <directory>./tests/node/v20</directory>
         </testsuite>
 
 

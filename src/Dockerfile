@@ -106,7 +106,7 @@ RUN apt-get update && \
                         zstd \
                         chromium-browser \
                         tideways-php tideways-cli tideways-daemon \
-                        filebeat && \
+                        filebeat \
                         apache2 libapache2-mod-fcgid && \
     mkdir /var/run/sshd && \
     # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog

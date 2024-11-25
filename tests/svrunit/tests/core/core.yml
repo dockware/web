@@ -24,8 +24,8 @@ commands:
     expected: "SVRUNIT: 1."
 
   - name: "zstd is installed"
-    command: "echo SVRUNIT: $(zstd -v)"
-    expected: "SVRUNIT: not-working-test"
+    command: "zstd --version"
+    expected: "*** zstd command line interface 64-bits v1.4.8, by Yann Collet ***"
 
   - name: "Permission: Verify 'www-data' has no shell login"
     command: "cat /etc/passwd"
