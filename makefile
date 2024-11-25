@@ -31,7 +31,7 @@ clear: ##1 Clears all dependencies dangling images
 build: ##2 Builds the image
 	@cd ./src && time DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=2.0.0 --build-arg IMAGE_TAG=dev-main -t dockware/flex:dev-main .
 
-size: ##2 Shows the size of the image
+analyze: ##2 Shows the size of the image
 	docker history dockware/flex:dev-main
 	rm -rf tmp-image.tar.gz | true
 	docker history --format "{{.CreatedBy}}\t\t{{.Size}}" dockware/flex:dev-main | grep -v "0B"
@@ -40,6 +40,8 @@ size: ##2 Shows the size of the image
 	ls -lh tmp-image.tar.gz
 	rm -rf tmp-image.tar
 	rm -rf ./src/tmp-image.tar.gz
+	docker run --rm -it dockware/flex:dev-main dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n -r | head -20
+
 
 # ----------------------------------------------------------------------------------------------------------------
 
@@ -49,4 +51,4 @@ verify: ##3 Verify the configuration
 test: ##3 Runs all SVRUnit Test Suites for the provided image and tag
 	# php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --list-suites
 	# php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --list-groups
-	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --debug --report-junit --report-html --stop-on-error
+	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --debug --report-junit --report-html
