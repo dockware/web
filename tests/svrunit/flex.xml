@@ -88,46 +88,6 @@
             <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
-        <testsuite name="PHP 7.3, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.3,XDEBUG_ENABLED=1">
-            <directory>./tests/php/php7.3</directory>
-            <directory>./tests/tools/xdebug/xdebug3</directory>
-            <directory>./tests/tools/composer/v2</directory>
-            <directory>./tests/tools/xdebug/xdebug-on</directory>
-            <directory>./tests/tools/tideways/config</directory>
-        </testsuite>
-
-        <testsuite name="PHP 7.2, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.2,XDEBUG_ENABLED=1">
-            <directory>./tests/php/php7.2</directory>
-            <directory>./tests/tools/xdebug/xdebug3</directory>
-            <directory>./tests/tools/composer/v2</directory>
-            <directory>./tests/tools/xdebug/xdebug-on</directory>
-            <directory>./tests/tools/tideways/config</directory>
-        </testsuite>
-
-        <testsuite name="PHP 7.1, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.1,XDEBUG_ENABLED=1">
-            <directory>./tests/php/php7.1</directory>
-            <directory>./tests/tools/xdebug/xdebug2</directory>
-            <directory>./tests/tools/composer/v2</directory>
-            <directory>./tests/tools/xdebug/xdebug-on</directory>
-            <directory>./tests/tools/tideways/config</directory>
-        </testsuite>
-
-        <testsuite name="PHP 7.0, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.0,XDEBUG_ENABLED=1">
-            <directory>./tests/php/php7.0</directory>
-            <directory>./tests/tools/xdebug/xdebug2</directory>
-            <directory>./tests/tools/composer/v2</directory>
-            <directory>./tests/tools/xdebug/xdebug-on</directory>
-            <directory>./tests/tools/tideways/config</directory>
-        </testsuite>
-
-        <testsuite name="PHP 5.6, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=5.6,XDEBUG_ENABLED=1">
-            <directory>./tests/php/php5.6</directory>
-            <directory>./tests/tools/xdebug/xdebug2</directory>
-            <directory>./tests/tools/composer/v2</directory>
-            <directory>./tests/tools/xdebug/xdebug-on</directory>
-            <directory>./tests/tools/tideways/config</directory>
-        </testsuite>
-
     </testsuites>
 
 </svrunit>
