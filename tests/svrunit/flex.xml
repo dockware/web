@@ -10,13 +10,24 @@
             <directory>./tests/tools/xdebug/xdebug-off</directory>
         </testsuite>
 
+        <!-- FEATURES -->
         <testsuite name="Recovery Mode works" group="core" dockerImage="dockware/flex:dev-main" dockerEnv="RECOVERY_MODE=1">
             <directory>./tests/features/recovery-mode</directory>
+        </testsuite>
+
+        <testsuite name="Tideways ON" dockerImage="dockware/flex:dev-main" dockerEnv="TIDEWAYS_KEY=abc">
+            <directory>./tests/tools/tideways/tideways-on</directory>
+        </testsuite>
+
+        <testsuite name="XDebug OFF" dockerImage="dockware/flex:dev-main" dockerEnv="XDEBUG_ENABLED=0">
+            <directory>./tests/tools/xdebug/xdebug-off</directory>
         </testsuite>
 
         <testsuite name="flex:dev-main, Command Runner" group="command-runner" dockerImage="dockware/flex:dev-main" dockerCommandRunner="true">
             <directory>./tests/features/command-runner</directory>
         </testsuite>
+
+        <!-- NODE -->
 
         <testsuite name="ENV - Node Version Switch to 20" dockerImage="dockware/flex:dev-main" dockerEnv="NODE_VERSION=20">
             <directory>./tests/node/v20</directory>
@@ -26,11 +37,15 @@
             <directory>./tests/node/v18</directory>
         </testsuite>
 
+
+        <!-- PHP -->
+
         <testsuite name="PHP 8.4, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.4,XDEBUG_ENABLED=1">
             <directory>./tests/php/php8.4</directory>
             <directory>./tests/tools/xdebug/xdebug3</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 8.3, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.3,XDEBUG_ENABLED=1">
@@ -38,6 +53,7 @@
             <directory>./tests/tools/xdebug/xdebug3</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 8.2, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.2,XDEBUG_ENABLED=1">
@@ -45,6 +61,7 @@
             <directory>./tests/tools/xdebug/xdebug3</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 8.1, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.1,XDEBUG_ENABLED=1">
@@ -52,6 +69,7 @@
             <directory>./tests/tools/xdebug/xdebug3</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 8.0, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=8.0,XDEBUG_ENABLED=1">
@@ -59,6 +77,7 @@
             <directory>./tests/tools/xdebug/xdebug3</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 7.4, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.4,XDEBUG_ENABLED=1">
@@ -66,6 +85,7 @@
             <directory>./tests/tools/xdebug/xdebug3</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 7.3, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.3,XDEBUG_ENABLED=1">
@@ -73,6 +93,7 @@
             <directory>./tests/tools/xdebug/xdebug3</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 7.2, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.2,XDEBUG_ENABLED=1">
@@ -80,6 +101,7 @@
             <directory>./tests/tools/xdebug/xdebug3</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 7.1, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.1,XDEBUG_ENABLED=1">
@@ -87,6 +109,7 @@
             <directory>./tests/tools/xdebug/xdebug2</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 7.0, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=7.0,XDEBUG_ENABLED=1">
@@ -94,6 +117,7 @@
             <directory>./tests/tools/xdebug/xdebug2</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
         <testsuite name="PHP 5.6, XDebug ON" dockerImage="dockware/flex:dev-main" dockerEnv="PHP_VERSION=5.6,XDEBUG_ENABLED=1">
@@ -101,10 +125,7 @@
             <directory>./tests/tools/xdebug/xdebug2</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/xdebug/xdebug-on</directory>
-        </testsuite>
-
-        <testsuite name="XDebug OFF" dockerImage="dockware/flex:dev-main" dockerEnv="XDEBUG_ENABLED=0">
-            <directory>./tests/tools/xdebug/xdebug-off</directory>
+            <directory>./tests/tools/tideways/config</directory>
         </testsuite>
 
     </testsuites>

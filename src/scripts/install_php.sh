@@ -18,6 +18,7 @@ PHP_VERSIONS=(
     "5.6:20131226"
 )
 
+
 for entry in "${PHP_VERSIONS[@]}"; do
     version="${entry%%:*}"
     phpFolderId="${entry##*:}"
@@ -28,12 +29,19 @@ for entry in "${PHP_VERSIONS[@]}"; do
     cat /tmp/config/php/general.ini >| /etc/php/$version/fpm/conf.d/01-general.ini
     cat /tmp/config/php/general.ini >| /etc/php/$version/cli/conf.d/01-general.ini
     cat /tmp/config/php/cli.ini >| /etc/php/$version/cli/conf.d/01-general-cli.ini
+
     cp /tmp/config/php/xdebug-3.ini /etc/php/$version/fpm/conf.d/20-xdebug.ini
     cp /tmp/config/php/xdebug-3.ini /etc/php/$version/cli/conf.d/20-xdebug.ini
-
-    # Add required xdebug files, replacing __PHP__FOLDER__ID in the process
     sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /tmp/config/php/xdebug-3.ini > /etc/php/$version/fpm/conf.d/20-xdebug.ini
     sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /tmp/config/php/xdebug-3.ini > /etc/php/$version/cli/conf.d/20-xdebug.ini
+
+    # Add Tideways extension via symlink to the PHP extensions of the current PHP version
+    sudo ln -sf /usr/lib/tideways/tideways-php-$version.so /usr/lib/php/$phpFolderId/tideways.so
+
+    cp /tmp/config/php/tideways.ini /etc/php/$version/fpm/conf.d/20-tideways.ini
+    cp /tmp/config/php/tideways.ini /etc/php/$version/cli/conf.d/20-tideways.ini
+    sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /tmp/config/php/tideways.ini > /etc/php/$version/fpm/conf.d/20-tideways.ini
+    sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /tmp/config/php/tideways.ini > /etc/php/$version/cli/conf.d/20-tideways.ini
 done
 
 # Remove unnecessary packages

@@ -92,11 +92,9 @@ RUN apt-get update && \
                         bzip2 \
                         ssmtp \
                         lsof \
-                        openssh-server \
+                        openssh-server openssl \
                         cron \
-                        openssl \
-                        vim \
-                        nano \
+                        vim nano \
                         jq \
                         gpg-agent \
                         rsync \
@@ -105,8 +103,11 @@ RUN apt-get update && \
                         screen \
                         mysql-client \
                         git \
+                        zstd \
                         chromium-browser \
+                        tideways-php tideways-cli tideways-daemon \
                         filebeat && \
+                        apache2 libapache2-mod-fcgid && \
     mkdir /var/run/sshd && \
     # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog
     ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
@@ -151,11 +152,10 @@ RUN echo "root:root" | chpasswd \
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-##  APACHE INSTALLATION
+##  APACHE CONFIGURATION
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-RUN apt-get install -y apache2 libapache2-mod-fcgid && \
-    cp /tmp/config/apache/http2.conf /etc/apache2/conf-available/http2.conf && \
+RUN cp /tmp/config/apache/http2.conf /etc/apache2/conf-available/http2.conf && \
     cp /tmp/config/apache/apache2.conf /etc/apache2/apache2.conf && \
     cp /tmp/config/apache/ports.conf /etc/apache2/ports.conf && \
     cp /tmp/config/apache/sites.conf /etc/apache2/sites-enabled/000-default.conf && \
@@ -230,7 +230,6 @@ RUN chown 33:33 -R /var/www/scripts && \
     chown 33:33 -R /var/www/html && \
     # make sure for the whole installation xdebug is off for performance
     sh /var/www/scripts/bin/xdebug_disable.sh
-    #chmod 755 /*.sh && \
 
 ## ***********************************************************************
 ## SWITCH TO NORMAL USER (NOT ROOT ANYMORE!)
@@ -250,7 +249,5 @@ WORKDIR /var/www/html
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
 
 
-# TODO xdebug
-# TODO tidways
-
+# TODO
 # chown -R www-data:www-data /var/www/.composer

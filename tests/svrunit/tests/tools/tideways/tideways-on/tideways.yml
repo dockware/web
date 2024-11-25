@@ -1,0 +1,7 @@
+
+file_exists:
+
+  - name: "Txxxxled"
+    file: "/var/log/tideways/daemon.log"
+    expected: 1
+

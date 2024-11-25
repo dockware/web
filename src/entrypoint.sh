@@ -138,16 +138,13 @@ if [ $RECOVERY_MODE = 0 ]; then
 
     if [ $TIDEWAYS_KEY != "not-set" ]; then
         echo "DOCKWARE: activating Tideways...."
-        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_ENV__/'${TIDEWAYS_ENV}'/g' /etc/default/tideways-daemon
-        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_API_KEY__/'${TIDEWAYS_KEY}'/g' /etc/php/$PHP_VERSION/fpm/conf.d/20-tideways.ini
-        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_API_KEY__/'${TIDEWAYS_KEY}'/g' /etc/php/$PHP_VERSION/cli/conf.d/20-tideways.ini
-        sudo service tideways-daemon start
+        # TODO this is sync process...we need to start it in the background and also assign the API key
+        sudo tideways-daemon --log=/var/log/tideways/daemon.log
         echo "-----------------------------------------------------------"
     fi
 
-    
 
-    
+
 
     # --------------------------------------------------
     # APACHE
