@@ -23,6 +23,10 @@ commands:
     command: "echo SVRUNIT: $(yarn -v)"
     expected: "SVRUNIT: 1."
 
+  - name: "zstd is installed"
+    command: "echo SVRUNIT: $(zstd -v)"
+    expected: "SVRUNIT: not-working-test"
+
   - name: "Permission: Verify 'www-data' has no shell login"
     command: "cat /etc/passwd"
     expected: "www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin"

@@ -138,8 +138,9 @@ if [ $RECOVERY_MODE = 0 ]; then
 
     if [ $TIDEWAYS_KEY != "not-set" ]; then
         echo "DOCKWARE: activating Tideways...."
-        # TODO this is sync process...we need to start it in the background and also assign the API key
-        sudo tideways-daemon --log=/var/log/tideways/daemon.log
+        # TODO assign the API key
+        nohup sudo tideways-daemon --log=/var/log/tideways/daemon.log > /dev/null 2>&1 &
+        ps aux | grep tideways-daemon
         echo "-----------------------------------------------------------"
     fi
 
