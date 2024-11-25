@@ -49,15 +49,14 @@ if [ $RECOVERY_MODE = 0 ]; then
     sudo ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
     sudo dpkg-reconfigure -f noninteractive tzdata
     echo "-----------------------------------------------------------"
-    
-    
+
     if [ $FILEBEAT_ENABLED = 1 ]; then
        echo "DOCKWARE: activating Filebeat..."
        sudo service filebeat start --strict.perms=false
        echo "-----------------------------------------------------------"
     fi
     
-        # checks if a different username is set in ENV and create if its not existing yet
+    # checks if a different username is set in ENV and create if its not existing yet
     if [ $SSH_USER != "not-set" ] && (! id -u "${SSH_USER}" >/dev/null 2>&1 ); then
         echo "DOCKWARE: creating additional SSH user...."
         # create a custom ssh user for our provided settings
@@ -86,7 +85,6 @@ if [ $RECOVERY_MODE = 0 ]; then
     echo "DOCKWARE: starting cron service...."
     sudo service cron start
     echo "-----------------------------------------------------------"
-    
 
     # --------------------------------------------------
     # APACHE
@@ -112,30 +110,17 @@ if [ $RECOVERY_MODE = 0 ]; then
       sudo service apache2 stop
       echo "-----------------------------------------------------------"
     fi
+
     CURRENT_PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;")
 
-    if [ $COMPOSER_VERSION = 1 ]; then
-       echo "DOCKWARE: switching to composer 1..."
-       sudo composer self-update --1
-       echo "-----------------------------------------------------------"
-    fi
-    if [ $COMPOSER_VERSION = 2 ]; then
-       echo "DOCKWARE: switching to composer 2..."
-       sudo composer self-update --stable
-       echo "-----------------------------------------------------------"
-    fi
-
-    # somehow we (once) had the problem that composer does not find a HOME directory
-    # this was the solution
+    # somehow we (once) had the problem that composer does not find a HOME directory this was the solution
     export COMPOSER_HOME=/var/www
-    
 
     if [ $XDEBUG_ENABLED = 1 ]; then
        sh /var/www/scripts/bin/xdebug_enable.sh
      else
        sh /var/www/scripts/bin/xdebug_disable.sh
     fi
-    
 
     if [ $TIDEWAYS_KEY != "not-set" ]; then
         echo "DOCKWARE: activating Tideways...."
@@ -145,9 +130,6 @@ if [ $RECOVERY_MODE = 0 ]; then
         ps aux | grep tideways-daemon
         echo "-----------------------------------------------------------"
     fi
-
-
-
 
     # --------------------------------------------------
     # APACHE
@@ -182,35 +164,12 @@ if [ $RECOVERY_MODE = 0 ]; then
         sh $file
     fi
 
-    # ------------------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------------------
-
-        echo ""
-    echo "WOHOOO, dockware/flex:latest IS READY :) - let's get started"
+    echo ""
+    echo "WOHOOO, container IS READY :) - let's get started"
     echo "-----------------------------------------------------"
-    echo "DOCKWARE CHANGELOG: /var/www/CHANGELOG.md"
     echo "PHP: $(php -v | grep cli)"
     echo "Apache DocRoot: ${APACHE_DOCROOT}"
 
-    echo "URLs (if you are using a custom domain, make sure its available using /etc/hosts or other approaches)"
-    
-    
-    
-    
-    
-
-    # ------------------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------------------
-
-        # used to inject the custom build script of
-    # plugins in dockware/dev
-    
 else
 
     echo ""

@@ -35,6 +35,9 @@ commands:
     command: "pwd"
     expected: "/var/www/html"
 
+  - name: "Cron is running"
+    command: "service cron status"
+    expected: "cron is running"
 
 file_exists:
 
