@@ -38,8 +38,8 @@ ENV FILEBEAT_ENABLED 0
 ENV TIDEWAYS_KEY not-set
 
 # these are all our files that we need to setup the image
-COPY --chmod=0755 ./scripts /tmp/scripts
-COPY --chmod=0755 ./config /tmp/config
+COPY --chmod=0755 ./scripts /dockware/tmp/scripts
+COPY --chmod=0755 ./config /dockware/tmp/config
 
 # this are runtime executables for users
 COPY --chmod=0755 ./assets/scripts/makefile /var/www/makefile
@@ -83,32 +83,33 @@ RUN echo "id:basics" && \
     # update our repositories
     apt-get update && \
     # now have fun installing stuff
-    apt-get install -y --no-install-recommends  gosu \
-                        curl \
-                        unzip \
-                        bzip2 \
-                        zstd \
-                        ssmtp \
-                        lsof \
-                        openssh-server openssl sshpass \
-                        cron \
-                        vim \
-                        jq \
-                        gpg-agent \
-                        rsync \
-                        jpegoptim \
-                        screen \
-                        mysql-client \
-                        git \
-                        tideways-php tideways-cli tideways-daemon \
-                        filebeat \
-                        make \
-                        apache2 libapache2-mod-fcgid && \
+    apt-get install -y --no-install-recommends \
+            gosu \
+            make \
+            curl \
+            vim-tiny \
+            unzip \
+            bzip2 \
+            zstd \
+            ssmtp \
+            lsof \
+            openssh-server openssl sshpass \
+            cron \
+            jq \
+            gpg-agent \
+            rsync \
+            jpegoptim \
+            mysql-client \
+            git \
+            apache2 libapache2-mod-fcgid  \
+            tideways-php tideways-daemon \
+            filebeat && \
     mkdir /var/run/sshd && \
     # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog
     ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
     echo "Europe/Berlin" > /etc/timezone && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -146,7 +147,8 @@ RUN echo "id:users" && \
     rm -rf /var/www/.ssh/id_rsa.pub; true && \
     ssh-keygen -t rsa -b 4096 -f /var/www/.ssh/id_rsa -C "Dockware Container" -P "" && \
     chown -R www-data:www-data /var/www/.ssh && \
-    chmod 0700 /var/www/.ssh
+    chmod 0700 /var/www/.ssh && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -154,10 +156,10 @@ RUN echo "id:users" && \
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 RUN echo "id:apache" && \
-    cp /tmp/config/apache/http2.conf /etc/apache2/conf-available/http2.conf && \
-    cp /tmp/config/apache/apache2.conf /etc/apache2/apache2.conf && \
-    cp /tmp/config/apache/ports.conf /etc/apache2/ports.conf && \
-    cp /tmp/config/apache/sites.conf /etc/apache2/sites-enabled/000-default.conf && \
+    cp /dockware/tmp/config/apache/http2.conf /etc/apache2/conf-available/http2.conf && \
+    cp /dockware/tmp/config/apache/apache2.conf /etc/apache2/apache2.conf && \
+    cp /dockware/tmp/config/apache/ports.conf /etc/apache2/ports.conf && \
+    cp /dockware/tmp/config/apache/sites.conf /etc/apache2/sites-enabled/000-default.conf && \
     a2enmod headers rewrite expires proxy proxy_http proxy_wstunnel actions fcgid alias proxy_fcgi http2 ssl && \
     sudo a2enconf http2 && \
     sudo a2dismod mpm_prefork > /dev/null 2>&1 && \
@@ -182,7 +184,8 @@ RUN echo "id:apache" && \
     ##  create SSL certificate
     ## ***********************************************************************
     mkdir /etc/apache2/ssl && \
-    openssl req -new -x509 -days 365 -sha1 -newkey rsa:2048 -nodes -keyout /etc/apache2/ssl/server.key -out /etc/apache2/ssl/server.crt -subj '/O=Company/OU=Department/CN=localhost'
+    openssl req -new -x509 -days 365 -sha1 -newkey rsa:2048 -nodes -keyout /etc/apache2/ssl/server.key -out /etc/apache2/ssl/server.crt -subj '/O=Company/OU=Department/CN=localhost' && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -191,7 +194,7 @@ RUN echo "id:apache" && \
 
 RUN echo "id:php" && \
     sudo apt-get update && \
-    cd /tmp/scripts && bash install_php.sh && \
+    cd /dockware/tmp/scripts && bash install_php.sh && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --version=2.2.9 --quiet && \
     # prepare "global" composer directory for www-data
     mkdir -p /var/www/.composer && \
@@ -199,7 +202,8 @@ RUN echo "id:php" && \
     chmod 755 /tmp/composer.phar && \
     mv /tmp/composer.phar /usr/local/bin/composer && \
     chown -R 33:33 /var/www/.composer && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 ## ***********************************************************************
@@ -207,10 +211,11 @@ RUN echo "id:php" && \
 ## ***********************************************************************
 
 RUN echo "id:node" && \
-    cd /tmp/scripts && bash install_node.sh \
+    cd /dockware/tmp/scripts && bash install_node.sh \
     && mkdir /var/www/.npm   \
     && npm config set cache /var/www/.npm \
-    && cd /var/www && npm install -g --no-install-recommends yarn
+    && cd /var/www && npm install -g --no-install-recommends yarn && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 ## ***********************************************************************
@@ -223,7 +228,9 @@ RUN echo "id:permissions" && \
     chown 33:33 -R /var/www/scripts && \
     chown 33:33 -R /var/www/html && \
     # make sure for the whole installation xdebug is off for performance
-    sh /var/www/scripts/bin/xdebug_disable.sh
+    sh /var/www/scripts/bin/xdebug_disable.sh && \
+    rm -rf /dockware && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ## ***********************************************************************
 ## SWITCH TO NORMAL USER (NOT ROOT ANYMORE!)
