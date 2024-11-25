@@ -9,26 +9,35 @@ LABEL title="Dockware flex:latest" \
       version="${IMAGE_VERSION}" \
       maintainer="dasistweb GmbH"
 
+# these are identifier values
+# that are read and shown to the user about this image
+RUN mkdir /dockware && \
+    echo '${IMAGE_TAG}' > /dockware/tag.txt && \
+    echo '${IMAGE_VERSION}' > /dockware/version.txt && \
+    date >/dockware/build-date.txt && \
+    echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
+    mkdir -p /var/www && \
+    mkdir -p /var/www/scripts && \
+    mkdir -p /var/dockware/cache
 
 ## ***********************************************************************
 ##  IMAGE VARIABLES
 ## ***********************************************************************
-ENV TZ Europe/Berlin \
-    PHP_VERSION not-set \
-    APACHE_DOCROOT /var/www/html/public \
-    COMPOSER_VERSION not-set \
-    NODE_VERSION not-set \
-    RECOVERY_MODE 0 \
-    SSH_USER not-set \
-    SSH_PWD not-set \
-    XDEBUG_REMOTE_HOST "host.docker.internal" \
-    XDEBUG_CONFIG "idekey=PHPSTORM" \
-    PHP_IDE_CONFIG "serverName=localhost" \
-    XDEBUG_ENABLED 0 \
-    FILEBEAT_ENABLED 0 \
-    TIDEWAYS_KEY not-set \
-    TIDEWAYS_ENV production \
-    BASH_ENV /var/www/.bashrc
+ENV TZ Europe/Berlin
+ENV PHP_VERSION not-set
+ENV APACHE_DOCROOT /var/www/html/public
+ENV COMPOSER_VERSION not-set
+ENV NODE_VERSION not-set
+ENV RECOVERY_MODE 0
+ENV SSH_USER not-set
+ENV SSH_PWD not-set
+ENV XDEBUG_REMOTE_HOST "host.docker.internal"
+ENV XDEBUG_CONFIG "idekey=PHPSTORM"
+ENV PHP_IDE_CONFIG "serverName=localhost"
+ENV XDEBUG_ENABLED 0
+ENV FILEBEAT_ENABLED 0
+ENV TIDEWAYS_KEY not-set
+ENV TIDEWAYS_ENV production
 
 # these are all our files that we need to setup the image
 COPY --chmod=0755 ./scripts /tmp/scripts
@@ -43,19 +52,9 @@ COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
 # -------------------------------------------------------------------------------------------------------
 
+ENV BASH_ENV /var/www/.bashrc
 
-# these are identifier values
-# that are read and shown to the user about this image
-RUN mkdir /dockware && \
-    echo '${IMAGE_TAG}' > /dockware/tag.txt && \
-    echo '${IMAGE_VERSION}' > /dockware/version.txt && \
-    date >/dockware/build-date.txt && \
-    echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
-    mkdir -p /var/www && \
-    mkdir -p /var/www/scripts && \
-    mkdir -p /var/dockware/cache && \
-    # -----------------------------------------------------------------------
-    echo "export TZ=${TZ}" >> /etc/profile \
+RUN echo "export TZ=${TZ}" >> /etc/profile \
     && echo "export PHP_VERSION=${PHP_VERSION}" >> /etc/profile \
     && echo "export APACHE_DOCROOT=${APACHE_DOCROOT}" >> /etc/profile \
     && echo "export COMPOSER_VERSION=${COMPOSER_VERSION}" >> /etc/profile \
@@ -69,11 +68,14 @@ RUN mkdir /dockware && \
     && echo "export PHP_IDE_CONFIG=${PHP_IDE_CONFIG}" >> /etc/profile \
     && echo "export FILEBEAT_ENABLED=${FILEBEAT_ENABLED}" >> /etc/profile \
     && echo "export TIDEWAYS_KEY=${TIDEWAYS_KEY}" >> /etc/profile \
-    && echo "export TIDEWAYS_ENV=${TIDEWAYS_ENV}" >> /etc/profile && \
+    && echo "export TIDEWAYS_ENV=${TIDEWAYS_ENV}" >> /etc/profile
+
+
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ##  BASE REQUIREMENTS
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    apt-get update && \
+
+RUN apt-get update && \
     # first install tools to add repositories
     apt-get install -y wget gnupg2 sudo apt-transport-https software-properties-common && \
     LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php && \
