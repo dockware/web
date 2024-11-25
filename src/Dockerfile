@@ -54,7 +54,8 @@ COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
 ENV BASH_ENV /var/www/.bashrc
 
-RUN echo "export TZ=${TZ}" >> /etc/profile \
+RUN echo "id:env-variables" && \
+    echo "export TZ=${TZ}" >> /etc/profile \
     && echo "export PHP_VERSION=${PHP_VERSION}" >> /etc/profile \
     && echo "export APACHE_DOCROOT=${APACHE_DOCROOT}" >> /etc/profile \
     && echo "export COMPOSER_VERSION=${COMPOSER_VERSION}" >> /etc/profile \
@@ -75,7 +76,8 @@ RUN echo "export TZ=${TZ}" >> /etc/profile \
 ##  BASE REQUIREMENTS
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-RUN apt-get update && \
+RUN echo "id:basics" && \
+    apt-get update && \
     # first install tools to add repositories
     apt-get install -y wget gnupg2 sudo apt-transport-https software-properties-common && \
     LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php && \
@@ -90,21 +92,19 @@ RUN apt-get update && \
                         curl \
                         unzip \
                         bzip2 \
+                        zstd \
                         ssmtp \
                         lsof \
-                        openssh-server openssl \
+                        openssh-server openssl sshpass \
                         cron \
-                        vim nano \
+                        vim \
                         jq \
                         gpg-agent \
                         rsync \
-                        sshpass \
                         jpegoptim \
                         screen \
                         mysql-client \
                         git \
-                        zstd \
-                        chromium-browser \
                         tideways-php tideways-cli tideways-daemon \
                         filebeat \
                         apache2 libapache2-mod-fcgid && \
@@ -118,7 +118,8 @@ RUN apt-get update && \
 ##  USER MANAGEMENT
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-RUN echo "root:root" | chpasswd \
+RUN echo "id:users" && \
+    echo "root:root" | chpasswd \
     # set password for www-data, and also
     # avoid shell login (we have a separate user for that)
     echo 'www-data:www-data' | chpasswd && \
@@ -155,7 +156,8 @@ RUN echo "root:root" | chpasswd \
 ##  APACHE CONFIGURATION
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-RUN cp /tmp/config/apache/http2.conf /etc/apache2/conf-available/http2.conf && \
+RUN echo "id:apache" && \
+    cp /tmp/config/apache/http2.conf /etc/apache2/conf-available/http2.conf && \
     cp /tmp/config/apache/apache2.conf /etc/apache2/apache2.conf && \
     cp /tmp/config/apache/ports.conf /etc/apache2/ports.conf && \
     cp /tmp/config/apache/sites.conf /etc/apache2/sites-enabled/000-default.conf && \
@@ -201,7 +203,8 @@ RUN cp /tmp/config/apache/http2.conf /etc/apache2/conf-available/http2.conf && \
 ##  PHP INSTALLATION
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-RUN cd /tmp/scripts && bash install_php.sh  && \
+RUN echo "id:php" && \
+    cd /tmp/scripts && bash install_php.sh  && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --version=2.2.9 --quiet && \
     # prepare "global" composer directory for www-data
     mkdir -p /var/www/.composer && \
@@ -215,7 +218,8 @@ RUN cd /tmp/scripts && bash install_php.sh  && \
 ##  NODE INSTALLATION
 ## ***********************************************************************
 
-RUN cd /tmp/scripts && bash install_node.sh \
+RUN echo "id:node" && \
+    cd /tmp/scripts && bash install_node.sh \
     && mkdir /var/www/.npm   \
     && npm config set cache /var/www/.npm \
     && chown 33:33 /var/www/.npm -R \
@@ -226,7 +230,8 @@ RUN cd /tmp/scripts && bash install_node.sh \
 ##  PERKMISSIONS
 ## ***********************************************************************
 
-RUN chown 33:33 -R /var/www/scripts && \
+RUN echo "id:permissions" && \
+    chown 33:33 -R /var/www/scripts && \
     chown 33:33 -R /var/www/html && \
     # make sure for the whole installation xdebug is off for performance
     sh /var/www/scripts/bin/xdebug_disable.sh
