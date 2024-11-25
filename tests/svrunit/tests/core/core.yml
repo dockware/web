@@ -7,6 +7,10 @@ commands:
     command: "sudo"
     expected: "usage: sudo -h"
 
+  - name: "MAKE is installed"
+    command: "make"
+    not_expected: "make: command not found"
+
   - name: "JQ is installed"
     command: "jq --version"
     expected: "jq-1"

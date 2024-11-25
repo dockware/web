@@ -102,6 +102,7 @@ RUN echo "id:basics" && \
                         git \
                         tideways-php tideways-cli tideways-daemon \
                         filebeat \
+                        make \
                         apache2 libapache2-mod-fcgid && \
     mkdir /var/run/sshd && \
     # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog
