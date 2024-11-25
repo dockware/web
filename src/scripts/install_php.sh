@@ -44,12 +44,6 @@ for entry in "${PHP_VERSIONS[@]}"; do
     sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /tmp/config/php/tideways.ini > /etc/php/$version/cli/conf.d/20-tideways.ini
 done
 
-# Remove unnecessary packages
-apt-get remove -y dh-php
-
-# Clean up apt cache
-rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-
 # Set the default PHP version
 sudo update-alternatives --set php /usr/bin/php$DEFAULT_PHP_VERSION > /dev/null 2>&1 &
 

@@ -22,6 +22,4 @@
                     php8.0-pcov \
                     php8.0-mongo \
                     php8.0-xdebug \
-                    dh-php \
-                    php8.0-amqp \
-                    libpcre3 libpcre3-dev
+                    php8.0-amqp

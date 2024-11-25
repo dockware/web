@@ -29,7 +29,7 @@ clear: ##1 Clears all dependencies dangling images
 # ----------------------------------------------------------------------------------------------------------------
 
 build: ##2 Builds the image
-	@cd ./src && time DOCKER_BUILDKIT=1 docker build --no-cache --build-arg IMAGE_VERSION=2.0.0 --build-arg IMAGE_TAG=dev-main -t dockware/flex:dev-main .
+	@cd ./src && time DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=2.0.0 --build-arg IMAGE_TAG=dev-main -t dockware/flex:dev-main .
 
 size: ##2 Shows the size of the image
 	rm -rf tmp-image.tar.gz | true

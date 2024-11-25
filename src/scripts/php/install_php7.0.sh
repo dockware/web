@@ -20,7 +20,6 @@ apt-get install -y  php7.0-fpm \
                     php7.0-bcmath \
                     php7.0-imap \
                     php7.0-ssh2 \
-                    dh-php \
                     php7.0-geoip \
                     php7.0-amqp \
                     php7.0-xdebug \

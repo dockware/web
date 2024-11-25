@@ -20,7 +20,6 @@ apt-get install -y  php5.6-fpm \
                     php5.6-bcmath \
                     php5.6-imap \
                     php5.6-ssh2 \
-                    dh-php \
                     php5.6-geoip \
                     php5.6-amqp \
                     php5.6-xdebug \

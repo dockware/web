@@ -20,5 +20,4 @@ apt-get install -y  php8.2-fpm \
                     php8.2-apcu \
                     php8.2-pcov \
                     php8.2-mongo \
-                    php8.2-xdebug \
-                    dh-php
+                    php8.2-xdebug

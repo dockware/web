@@ -22,8 +22,6 @@ apt-get install -y  php7.4-fpm \
                     php7.4-ssh2 \
                     php7.4-pcov \
                     php7.4-mongo \
-                    dh-php \
                     php7.4-geoip \
                     php7.4-amqp \
-                    php7.4-xdebug \
-                    libpcre3 libpcre3-dev
+                    php7.4-xdebug

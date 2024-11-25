@@ -25,9 +25,8 @@ RUN mkdir /dockware && \
 ## ***********************************************************************
 ENV TZ Europe/Berlin
 ENV PHP_VERSION not-set
-ENV APACHE_DOCROOT /var/www/html/public
-ENV COMPOSER_VERSION not-set
 ENV NODE_VERSION not-set
+ENV APACHE_DOCROOT /var/www/html/public
 ENV RECOVERY_MODE 0
 ENV SSH_USER not-set
 ENV SSH_PWD not-set
@@ -37,7 +36,6 @@ ENV PHP_IDE_CONFIG "serverName=localhost"
 ENV XDEBUG_ENABLED 0
 ENV FILEBEAT_ENABLED 0
 ENV TIDEWAYS_KEY not-set
-ENV TIDEWAYS_ENV production
 
 # these are all our files that we need to setup the image
 COPY --chmod=0755 ./scripts /tmp/scripts
@@ -58,7 +56,6 @@ RUN echo "id:env-variables" && \
     echo "export TZ=${TZ}" >> /etc/profile \
     && echo "export PHP_VERSION=${PHP_VERSION}" >> /etc/profile \
     && echo "export APACHE_DOCROOT=${APACHE_DOCROOT}" >> /etc/profile \
-    && echo "export COMPOSER_VERSION=${COMPOSER_VERSION}" >> /etc/profile \
     && echo "export NODE_VERSION=${NODE_VERSION}" >> /etc/profile \
     && echo "export RECOVERY_MODE=${RECOVERY_MODE}" >> /etc/profile \
     && echo "export SSH_USER=${SSH_USER}" >> /etc/profile \
@@ -68,9 +65,7 @@ RUN echo "id:env-variables" && \
     && echo "export XDEBUG_CONFIG=${XDEBUG_CONFIG}" >> /etc/profile \
     && echo "export PHP_IDE_CONFIG=${PHP_IDE_CONFIG}" >> /etc/profile \
     && echo "export FILEBEAT_ENABLED=${FILEBEAT_ENABLED}" >> /etc/profile \
-    && echo "export TIDEWAYS_KEY=${TIDEWAYS_KEY}" >> /etc/profile \
-    && echo "export TIDEWAYS_ENV=${TIDEWAYS_ENV}" >> /etc/profile
-
+    && echo "export TIDEWAYS_KEY=${TIDEWAYS_KEY}" >> /etc/profile
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ##  BASE REQUIREMENTS
@@ -88,7 +83,7 @@ RUN echo "id:basics" && \
     # update our repositories
     apt-get update && \
     # now have fun installing stuff
-    apt-get install -y  gosu \
+    apt-get install -y --no-install-recommends  gosu \
                         curl \
                         unzip \
                         bzip2 \
@@ -111,7 +106,8 @@ RUN echo "id:basics" && \
     mkdir /var/run/sshd && \
     # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog
     ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-    echo "Europe/Berlin" > /etc/timezone
+    echo "Europe/Berlin" > /etc/timezone && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -161,18 +157,7 @@ RUN echo "id:apache" && \
     cp /tmp/config/apache/apache2.conf /etc/apache2/apache2.conf && \
     cp /tmp/config/apache/ports.conf /etc/apache2/ports.conf && \
     cp /tmp/config/apache/sites.conf /etc/apache2/sites-enabled/000-default.conf && \
-    a2enmod headers && \
-    a2enmod rewrite && \
-    a2enmod expires && \
-    a2enmod proxy && \
-    a2enmod proxy_http && \
-    a2enmod proxy_wstunnel && \
-    a2enmod actions && \
-    a2enmod fcgid && \
-    a2enmod alias && \
-    a2enmod proxy_fcgi && \
-    a2enmod http2 && \
-    a2enmod ssl && \
+    a2enmod headers rewrite expires proxy proxy_http proxy_wstunnel actions fcgid alias proxy_fcgi http2 ssl && \
     sudo a2enconf http2 && \
     sudo a2dismod mpm_prefork > /dev/null 2>&1 && \
     sudo a2enmod mpm_event > /dev/null 2>&1 && \
@@ -204,14 +189,16 @@ RUN echo "id:apache" && \
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 RUN echo "id:php" && \
-    cd /tmp/scripts && bash install_php.sh  && \
+    sudo apt-get update && \
+    cd /tmp/scripts && bash install_php.sh && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp --version=2.2.9 --quiet && \
     # prepare "global" composer directory for www-data
     mkdir -p /var/www/.composer && \
     export COMPOSER_HOME="/var/www/.composer" && \
     chmod 755 /tmp/composer.phar && \
     mv /tmp/composer.phar /usr/local/bin/composer && \
-    chown -R 33:33 /var/www/.composer
+    chown -R 33:33 /var/www/.composer && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 ## ***********************************************************************

@@ -21,7 +21,6 @@ apt-get install -y  php7.2-fpm \
                     php7.2-imap \
                     php7.2-ssh2 \
                     php7.2-pcov \
-                    dh-php \
                     php7.2-geoip \
                     php7.2-amqp \
                     php7.2-xdebug \
