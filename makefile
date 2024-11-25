@@ -41,13 +41,10 @@ analyze: ##2 Shows the size of the image
 	rm -rf ./src/tmp-image.tar.gz
 	docker run --rm -it dockware/flex:dev-main dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n -r | head -20
 
-
 # ----------------------------------------------------------------------------------------------------------------
 
 verify: ##3 Verify the configuration
 	php ./build/Scripts/verify-config.php flex dev-main
 
 test: ##3 Runs all SVRUnit Test Suites for the provided image and tag
-	# php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --list-suites
-	# php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --list-groups
-	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=dev-main --debug --report-junit --report-html
+	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=dev-main --report-junit --report-html
