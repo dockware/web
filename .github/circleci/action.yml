@@ -2,8 +2,6 @@ name: 'Start Circle CI Release'
 description: "Triggers the CircleCI pipeline"
 
 inputs:
-  # ------------------------------------------------------------------------------------
-  # ENVIRONMENT SETTINGS
   CIRCLECI_KEY:
     description: "CircleCI token"
     required: true
@@ -12,8 +10,7 @@ inputs:
     required: true
   SET_LATEST:
     description: "Whether its the latest or not"
-    default: 'false'
-    required: false
+    required: true
 
 runs:
   using: "composite"
