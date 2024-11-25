@@ -72,3 +72,13 @@ file_exists:
   - name: "Build Date Meta file exists"
     file: " /dockware/build-date.txt"
     expected: 1
+
+file_content:
+
+  - name: "Apache sites.conf FPM placeholder is replaced"
+    file: "/etc/apache2/sites-enabled/000-default.conf"
+    not_expected: "__dockware_php_version__"
+
+  - name: "Apache sites.conf DocRoot placeholder is replaced"
+    file: "/etc/apache2/sites-enabled/000-default.conf"
+    not_expected: "__dockware_apache_docroot__"

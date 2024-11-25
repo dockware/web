@@ -86,12 +86,6 @@ if [ $RECOVERY_MODE = 0 ]; then
     sudo service cron start
     echo "-----------------------------------------------------------"
 
-    # --------------------------------------------------
-    # APACHE
-    # first set the correct doc root, because we need it for the php switch below
-    sudo sed -i 's#__dockware_apache_docroot__#'${APACHE_DOCROOT}'#g' /etc/apache2/sites-enabled/000-default.conf
-    # --------------------------------------------------
-
     if [ "$NODE_VERSION" != "not-set" ]; then
        echo "DOCKWARE: switching to Node ${NODE_VERSION}..."
        nvm alias default ${NODE_VERSION}
@@ -133,6 +127,9 @@ if [ $RECOVERY_MODE = 0 ]; then
 
     # --------------------------------------------------
     # APACHE
+    # first set the correct doc root, because we need it for the php switch below
+    sudo sed -i 's#__dockware_apache_docroot__#'${APACHE_DOCROOT}'#g' /etc/apache2/sites-enabled/000-default.conf
+    sudo sed -i 's#__dockware_php_version__#'${CURRENT_PHP_VERSION}'#g' /etc/apache2/sites-enabled/000-default.conf
     # sometimes the internal docker structure leaves
     # some pid files existing. the container will be recreated....but
     # in reality it's not! thus there might be the problem
