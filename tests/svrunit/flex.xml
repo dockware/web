@@ -1,4 +1,4 @@
-<svrunit setupTime="7">
+<svrunit setupTime="5">
 
     <testsuites>
 
@@ -15,6 +15,10 @@
             <directory>./tests/features/recovery-mode</directory>
         </testsuite>
 
+        <testsuite name="Timezone can be set" dockerImage="dockware/flex:dev-main" dockerEnv="TZ=Asia/Tokyo">
+            <directory>./tests/features/timezone</directory>
+        </testsuite>
+
         <testsuite name="Tideways ON" dockerImage="dockware/flex:dev-main" dockerEnv="TIDEWAYS_KEY=abc">
             <directory>./tests/tools/tideways/tideways-on</directory>
         </testsuite>
@@ -23,7 +27,7 @@
             <directory>./tests/tools/xdebug/xdebug-off</directory>
         </testsuite>
 
-        <testsuite name="flex:dev-main, Command Runner" group="command-runner" dockerImage="dockware/flex:dev-main" dockerCommandRunner="true">
+        <testsuite name="Command Runner" group="command-runner" dockerImage="dockware/flex:dev-main" dockerCommandRunner="true">
             <directory>./tests/features/command-runner</directory>
         </testsuite>
 

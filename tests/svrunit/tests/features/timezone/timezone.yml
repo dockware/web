@@ -1,0 +1,5 @@
+commands:
+
+  - name: "check timezone Asia/Tokyio"
+    command: "sudo cat /etc/timezone"
+    expected: "Asia/Tokyo"

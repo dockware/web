@@ -222,7 +222,6 @@ RUN echo "id:node" && \
     cd /tmp/scripts && bash install_node.sh \
     && mkdir /var/www/.npm   \
     && npm config set cache /var/www/.npm \
-    && chown 33:33 /var/www/.npm -R \
     && cd /var/www && npm install -g --no-install-recommends yarn
 
 
@@ -231,6 +230,8 @@ RUN echo "id:node" && \
 ## ***********************************************************************
 
 RUN echo "id:permissions" && \
+    chown 33:33 -R /var/www/.composer && \
+    chown 33:33 -R /var/www/.npm && \
     chown 33:33 -R /var/www/scripts && \
     chown 33:33 -R /var/www/html && \
     # make sure for the whole installation xdebug is off for performance
@@ -252,7 +253,3 @@ WORKDIR /var/www/html
 ## ***********************************************************************
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
-
-
-# TODO
-# chown -R www-data:www-data /var/www/.composer

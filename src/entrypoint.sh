@@ -45,7 +45,7 @@ if [ $RECOVERY_MODE = 0 ]; then
         sh $file
     fi
 
-        echo "DOCKWARE: setting timezone to ${TZ}..."
+    echo "DOCKWARE: setting timezone to ${TZ}..."
     sudo ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
     sudo dpkg-reconfigure -f noninteractive tzdata
     echo "-----------------------------------------------------------"
