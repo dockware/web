@@ -1,7 +1,9 @@
 commands:
-  - name: "Xdebug not active"
+
+  - name: "Xdebug is active"
     command: "php -v"
-    not_expected: "with Xdebug"
+    expected: "with Xdebug"
+
   - name: "Xdebug not Corrupted"
     command: "php -v"
     not_expected: "zend_mm_heap corrupted"
