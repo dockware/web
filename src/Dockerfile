@@ -2,7 +2,6 @@
 # Copyright 2025 dasistweb GmbH
 #
 ARG IMAGE_VERSION
-ARG IMAGE_TAG
 
 FROM ubuntu:22.04
 LABEL title="Dockware flex:latest" \
@@ -12,7 +11,6 @@ LABEL title="Dockware flex:latest" \
 # these are identifier values
 # that are read and shown to the user about this image
 RUN mkdir /dockware && \
-    echo ${IMAGE_TAG} > /dockware/tag.txt && \
     echo ${IMAGE_VERSION} > /dockware/version.txt && \
     date >/dockware/build-date.txt && \
     echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \

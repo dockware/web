@@ -13,7 +13,6 @@ echo "6c 6f 6f 6b 69 6e 67 20 66 6f 72 20 61 20 6a 6f 62 3f 20 77 72 69 74 65 20
 echo ""
 echo "*******************************************************"
 echo "** DOCKWARE IMAGE: flex"
-echo "** Tag: $(cat /dockware/tag.txt)"
 echo "** Version: $(cat /dockware/version.txt)"
 echo "** Built: $(cat /dockware/build-date.txt)"
 echo "** Copyright $(cat /dockware/copyright.txt)"

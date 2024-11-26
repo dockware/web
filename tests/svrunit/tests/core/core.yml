@@ -61,10 +61,6 @@ file_exists:
     file: " /dockware/version.txt"
     expected: 1
 
-  - name: "Tag Meta file exists"
-    file: " /dockware/tag.txt"
-    expected: 1
-
   - name: "Copyright Meta file exists"
     file: " /dockware/copyright.txt"
     expected: 1
