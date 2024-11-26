@@ -16,7 +16,7 @@ commands:
     expected: "jq-1"
 
   - name: "VIM is installed"
-    command: "vi --v"
+    command: "vim --v"
     expected: "VIM - Vi IMproved"
 
   - name: "YARN Dependency Manager exists"

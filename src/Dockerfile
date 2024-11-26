@@ -6,14 +6,14 @@ ARG IMAGE_TAG
 
 FROM ubuntu:22.04
 LABEL title="Dockware flex:latest" \
-      version="${IMAGE_VERSION}" \
+      version=${IMAGE_VERSION} \
       maintainer="dasistweb GmbH"
 
 # these are identifier values
 # that are read and shown to the user about this image
 RUN mkdir /dockware && \
-    echo '${IMAGE_TAG}' > /dockware/tag.txt && \
-    echo '${IMAGE_VERSION}' > /dockware/version.txt && \
+    echo ${IMAGE_TAG} > /dockware/tag.txt && \
+    echo ${IMAGE_VERSION} > /dockware/version.txt && \
     date >/dockware/build-date.txt && \
     echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
     mkdir -p /var/www && \
@@ -87,7 +87,7 @@ RUN echo "id:basics" && \
             gosu \
             make \
             curl \
-            vim-tiny \
+            vim \
             unzip \
             bzip2 \
             zstd \

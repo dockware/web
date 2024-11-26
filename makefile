@@ -29,22 +29,31 @@ clear: ##1 Clears all dependencies dangling images
 # ----------------------------------------------------------------------------------------------------------------
 
 build: ##2 Builds the image
-	@cd ./src && time DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=2.0.0 --build-arg IMAGE_TAG=dev-main -t dockware/flex:dev-main .
+ifndef version
+	$(error Please provide the argument version=xyz to run the command)
+endif
+ifndef tag
+	$(error Please provide the argument tag=xyz to run the command)
+endif
+	@cd ./src && time DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) --build-arg IMAGE_TAG=$(tag) -t dockware/flex:$(tag) .
 
 analyze: ##2 Shows the size of the image
-	rm -rf tmp-image.tar.gz | true
-	docker history --format "{{.CreatedBy}}\t\t{{.Size}}" dockware/flex:dev-main | grep -v "0B"
-	docker save -o tmp-image.tar dockware/flex:dev-main
-	gzip tmp-image.tar
-	ls -lh tmp-image.tar.gz
-	rm -rf tmp-image.tar
-	rm -rf ./src/tmp-image.tar.gz
-	docker run --rm -it dockware/flex:dev-main dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n -r | head -20
+ifndef tag
+	$(error Please provide the argument tag=xyz to run the command)
+endif
+	docker history --format "{{.CreatedBy}}\t\t{{.Size}}" dockware/flex:$(tag) | grep -v "0B"
+	# --------------------------------------------------
+	docker save -o flex.tar dockware/flex:$(tag)
+	gzip flex.tar
+	ls -lh flex.tar.gz
+	# --------------------------------------------------
+	rm -rf flex.tar
+	rm -rf flex.tar.gz | true
 
 # ----------------------------------------------------------------------------------------------------------------
 
-verify: ##3 Verify the configuration
-	php ./build/Scripts/verify-config.php flex dev-main
-
-test: ##3 Runs all SVRUnit Test Suites for the provided image and tag
-	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=dev-main --report-junit --report-html
+test: ##3 Runs all SVRUnit tests
+ifndef tag
+	$(error Please provide the argument tag=xyz to run the command)
+endif
+	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(tag) --report-junit --report-html
