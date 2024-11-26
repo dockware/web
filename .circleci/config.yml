@@ -20,6 +20,11 @@ parameters:
 workflows:
 
   release-image:
+    when:
+      and:
+        - not:
+            # avoid that it automatically triggers on push
+            equal: [ "", << pipeline.parameters.imageName >> ]
     jobs:
       - job-build-arm64:
           name: build-arm
