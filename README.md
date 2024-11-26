@@ -1,5 +1,6 @@
 # Dockware Flex
- 
+
+![Shopware 6 Preview](./header.jpg)
 
 [![MIT licensed](https://img.shields.io/github/license/dockware/dockware.svg?style=flat-square)](https://github.com/dockware/dockware/blob/master/LICENSE)
 
