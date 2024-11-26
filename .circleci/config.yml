@@ -7,10 +7,6 @@ parameters:
   imageTag:
     type: string
     default: ""
-  shopwareVersion:
-    description: make sure a push does not trigger any workflow
-    type: string
-    default: ""
   setLatest:
     description: defines if the latest tag should be set to this version
     type: boolean
@@ -24,10 +20,6 @@ parameters:
 workflows:
 
   release-image:
-    when:
-      and:
-        - not:
-            equal: [ "", << pipeline.parameters.imageName >> ]
     jobs:
       - job-build-arm64:
           name: build-arm
@@ -48,56 +40,16 @@ workflows:
             - build-arm
             - build-amd
 
-  release-shopware:
-    when:
-      and:
-        - not:
-            equal: [ "", << pipeline.parameters.shopwareVersion >> ]
-    jobs:
-      # ------------------------------------------------------------------------------------
-      - job-build-arm64:
-          name: sw-<< pipeline.parameters.shopwareVersion >>-dev-arm64
-          imageName: "dev"
-          imageTag: << pipeline.parameters.shopwareVersion >>
-      # ------------------------------------------------------------------------------------
-      - job-build-arm64:
-          name: sw-<< pipeline.parameters.shopwareVersion >>-play-arm64
-          imageName: "play"
-          imageTag: << pipeline.parameters.shopwareVersion >>
-      # ------------------------------------------------------------------------------------
-      - job-build-amd64:
-          name: sw-<< pipeline.parameters.shopwareVersion >>-dev-amd64
-          imageName: "dev"
-          imageTag: << pipeline.parameters.shopwareVersion >>
-      # ------------------------------------------------------------------------------------
-      - job-build-amd64:
-          name: sw-<< pipeline.parameters.shopwareVersion >>-play-amd64
-          imageName: "play"
-          imageTag: << pipeline.parameters.shopwareVersion >>
-      # ------------------------------------------------------------------------------------
-      - job-update-manifest:
-          name: update-manifest-dev
-          imageName: "dev"
-          imageTag: << pipeline.parameters.shopwareVersion >>
-          setLatest: << pipeline.parameters.setLatest >>
-          requires:
-            - sw-<< pipeline.parameters.shopwareVersion >>-dev-amd64
-            - sw-<< pipeline.parameters.shopwareVersion >>-dev-arm64
-      # ------------------------------------------------------------------------------------
-      - job-update-manifest:
-          name: update-manifest-play
-          imageName: "play"
-          imageTag: << pipeline.parameters.shopwareVersion >>
-          setLatest: << pipeline.parameters.setLatest >>
-          requires:
-            - sw-<< pipeline.parameters.shopwareVersion >>-play-amd64
-            - sw-<< pipeline.parameters.shopwareVersion >>-play-arm64
+# -----------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------
 
-
-# -----------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------
+executors:
+  ubuntu-executor:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
 
 
 # Define a job to be invoked later in a workflow.
@@ -105,79 +57,74 @@ workflows:
 jobs:
 
   job-build-arm64:
-    parameters:
-      imageName:
-        type: string
-      imageTag:
-        type: string
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
-    resource_class: arm.medium
-    steps:
-      - checkout
-      - cmd_install
-      - cmd_image_build_push:
-          imageName: <<parameters.imageName>>
-          imageTag: <<parameters.imageTag>>
-          imageArch: "arm64"
+      executor: ubuntu-executor
+      resource_class: arm.medium
+      parameters:
+        imageName:
+          type: string
+        imageTag:
+          type: string
+      steps:
+          - checkout
+          - cmd_install
+          - cmd_image_build_push:
+              imageName: <<parameters.imageName>>
+              imageTag: <<parameters.imageTag>>
+              imageArch: "arm64"
 
   job-build-amd64:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
-    resource_class: medium
-    parameters:
-      imageName:
-        type: string
-      imageTag:
-        type: string
-    steps:
-      - checkout
-      - cmd_install
-      - cmd_image_build_push:
-          imageName: << parameters.imageName >>
-          imageTag: << parameters.imageTag >>
-          imageArch: "amd64"
+      executor: ubuntu-executor
+      resource_class: medium
+      parameters:
+          imageName:
+            type: string
+          imageTag:
+            type: string
+      steps:
+          - checkout
+          - cmd_install
+          - cmd_image_build_push:
+              imageName: << parameters.imageName >>
+              imageTag: << parameters.imageTag >>
+              imageArch: "amd64"
 
   job-update-manifest:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
-    resource_class: medium
-    parameters:
-      imageName:
-        type: string
-      imageTag:
-        type: string
-      setLatest:
-        type: boolean
-    steps:
-      # ------------------------------------------------------------------------------------
-      - run:
-          name: Docker Hub Login
-          command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-      # ------------------------------------------------------------------------------------
-      - run:
-          name: Create and push manifest (<< parameters.imageTag >>)
-          command: |
-            docker manifest create dockware/<< parameters.imageName >>:<< parameters.imageTag >> --amend dockware/<< parameters.imageName >>:<< parameters.imageTag >>-amd64 --amend dockware/<< parameters.imageName >>:<< parameters.imageTag >>-arm64
-            docker manifest push dockware/<< parameters.imageName >>:<< parameters.imageTag >>
-      # ------------------------------------------------------------------------------------
-      - run:
-          name: Create and push manifest (latest)
-          command: |
-            if [ << parameters.setLatest >> = true ]; then
-              docker manifest create dockware/<< parameters.imageName >>:latest --amend dockware/<< parameters.imageName >>:<< parameters.imageTag >>-amd64 --amend dockware/<< parameters.imageName >>:<< parameters.imageTag >>-arm64
-              docker manifest push dockware/<< parameters.imageName >>:latest
-            fi
+      executor: ubuntu-executor
+      resource_class: medium
+      parameters:
+          imageName:
+            type: string
+          imageTag:
+            type: string
+          setLatest:
+            type: boolean
+      steps:
+          # ------------------------------------------------------------------------------------
+          - run:
+              name: Docker Hub Login
+              command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          # ------------------------------------------------------------------------------------
+          - run:
+              name: Create and push manifest (<< parameters.imageTag >>)
+              command: |
+                docker manifest create dockware/<< parameters.imageName >>:<< parameters.imageTag >> --amend dockware/<< parameters.imageName >>:<< parameters.imageTag >>-amd64 --amend dockware/<< parameters.imageName >>:<< parameters.imageTag >>-arm64
+                docker manifest push dockware/<< parameters.imageName >>:<< parameters.imageTag >>
+          # ------------------------------------------------------------------------------------
+          - run:
+              name: Create and push manifest (latest)
+              command: |
+                if [ << parameters.setLatest >> = true ]; then
+                  docker manifest create dockware/<< parameters.imageName >>:latest --amend dockware/<< parameters.imageName >>:<< parameters.imageTag >>-amd64 --amend dockware/<< parameters.imageName >>:<< parameters.imageTag >>-arm64
+                  docker manifest push dockware/<< parameters.imageName >>:latest
+                fi
 
 # -----------------------------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 
+# these are shared commands for arm64 and amd64 jobs
 commands:
 
   cmd_install:
@@ -196,10 +143,7 @@ commands:
       - save_cache:
           key: vendor-cache
           paths:
-           - vendor
-      # ------------------------------------------------------------------------------------
-      # ORCA generate command
-      - run: make generate phar=1 -B
+            - vendor
 
   cmd_image_build_push:
     parameters:
@@ -212,19 +156,14 @@ commands:
     steps:
       # ------------------------------------------------------------------------------------
       - run:
-          name: Verify Configuration
+          name: Build Image flex:<< parameters.imageTag >>
           command: |
-            make verify image=<< parameters.imageName >> tag=<< parameters.imageTag >> -B
-      # ------------------------------------------------------------------------------------
-      - run:
-          name: Build Image << parameters.imageName >>:<< parameters.imageTag >>
-          command: |
-            make build image=<< parameters.imageName >> tag=<< parameters.imageTag >> -B
+            make build version=<< parameters.imageTag >> -B
       # ------------------------------------------------------------------------------------
       - run:
           name: Run SVRUnit Tests
           command: |
-            make test image=<< parameters.imageName >> tag=<< parameters.imageTag >> -B
+            make test version=<< parameters.imageTag >> -B
       - store_test_results:
           path: .reports
       - store_artifacts:
@@ -241,12 +180,11 @@ commands:
             IMG: << parameters.imageName >>
             TAG: << parameters.imageTag >>
           command: |
-            echo 127.0.0.1 cypress.shopware.com | sudo tee -a /etc/hosts
-            docker run --rm -p 80:80 --name shop -e SHOP_DOMAIN=cypress.shopware.com -d dockware/$IMG:$TAG
-            while ! curl -k -s -o /dev/null http://cypress.shopware.com; do echo Waiting for dockware; sleep 1; done
+            docker run --rm -p 80:80 --name app -d dockware/$IMG:$TAG
+            while ! curl -k -s -o /dev/null http://localhost; do echo Waiting for dockware; sleep 1; done
             sleep 5
-            docker logs shop
-            cd tests/cypress && IMG=$IMG TAG=$TAG URL=http://cypress.shopware.com bash run.sh
+            docker logs app
+            cd tests/cypress && make run url=URL=http://localhost
       # ------------------------------------------------------------------------------------
       - run:
           name: Docker Hub Login

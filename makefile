@@ -32,18 +32,15 @@ build: ##2 Builds the image
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-ifndef tag
-	$(error Please provide the argument tag=xyz to run the command)
-endif
-	@cd ./src && time DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) --build-arg IMAGE_TAG=$(tag) -t dockware/flex:$(tag) .
+	@cd ./src && time DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) -t dockware/flex:$(version) .
 
 analyze: ##2 Shows the size of the image
-ifndef tag
-	$(error Please provide the argument tag=xyz to run the command)
+ifndef version
+	$(error Please provide the argument version=xyz to run the command)
 endif
-	docker history --format "{{.CreatedBy}}\t\t{{.Size}}" dockware/flex:$(tag) | grep -v "0B"
+	docker history --format "{{.CreatedBy}}\t\t{{.Size}}" dockware/flex:$(version) | grep -v "0B"
 	# --------------------------------------------------
-	docker save -o flex.tar dockware/flex:$(tag)
+	docker save -o flex.tar dockware/flex:$(version)
 	gzip flex.tar
 	ls -lh flex.tar.gz
 	# --------------------------------------------------
@@ -53,7 +50,7 @@ endif
 # ----------------------------------------------------------------------------------------------------------------
 
 test: ##3 Runs all SVRUnit tests
-ifndef tag
-	$(error Please provide the argument tag=xyz to run the command)
+ifndef version
+	$(error Please provide the argument version=xyz to run the command)
 endif
-	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(tag) --report-junit --report-html
+	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(version) --report-junit --report-html
