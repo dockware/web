@@ -53,4 +53,4 @@ test: ##3 Runs all SVRUnit tests
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(version) --report-junit --report-html
+	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(version) --debug --report-junit --report-html

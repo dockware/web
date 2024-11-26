@@ -98,7 +98,7 @@ RUN echo "id:basics" && \
             rsync \
             jpegoptim \
             mysql-client \
-            git \
+            git git-lfs \
             apache2 libapache2-mod-fcgid  \
             tideways-php tideways-daemon \
             filebeat && \

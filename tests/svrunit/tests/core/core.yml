@@ -43,6 +43,14 @@ commands:
     command: "service cron status"
     expected: "cron is running"
 
+  - name: "GIT is installed"
+    command: "git --version"
+    expected: "git version 2.34"
+
+  - name: "GIT LFS is installed"
+    command: "git lfs --version"
+    expected: "git-lfs/3.0.2 (GitHub"
+
 file_exists:
 
   - name: "SSH Private Key exists"
