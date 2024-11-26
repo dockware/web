@@ -3,6 +3,10 @@
 ![Shopware 6 Preview](./header.jpg)
 
 [![MIT licensed](https://img.shields.io/github/license/dockware/dockware.svg?style=flat-square)](https://github.com/dockware/dockware/blob/master/LICENSE)
+![Docker Pulls](https://img.shields.io/docker/pulls/dockware/flex)
+![Docker Image Size](https://img.shields.io/docker/image-size/dockware/flex)
+
+
 
 Welcome to Dockware Flex! For more information, visit [dockware.io](https://dockware.io).
 
