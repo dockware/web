@@ -31,7 +31,7 @@ build: ##2 Builds the image
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	@cd ./src && time DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) -t dockware/flex:$(version) .
+	@cd ./src && DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) -t dockware/flex:$(version) .
 
 analyze: ##2 Shows the size of the image
 ifndef version
@@ -52,4 +52,4 @@ test: ##3 Runs all SVRUnit tests
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	time php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(version) --debug --report-junit --report-html
+	php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(version) --debug --report-junit --report-html
