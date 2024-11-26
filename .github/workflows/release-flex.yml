@@ -44,7 +44,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: false
           tags: dockware/flex:${{ github.event.inputs.version }}
-          context: $GITHUB_WORKSPACE/src
+          context: "{{defaultContext}}:src"
           build-args: |
             IMAGE_VERSION=${{ github.event.inputs.version }}
 
