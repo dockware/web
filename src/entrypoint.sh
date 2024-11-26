@@ -48,12 +48,6 @@ if [ $RECOVERY_MODE = 0 ]; then
     sudo ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
     sudo dpkg-reconfigure -f noninteractive tzdata
     echo "-----------------------------------------------------------"
-
-    if [ $FILEBEAT_ENABLED = 1 ]; then
-       echo "DOCKWARE: activating Filebeat..."
-       sudo service filebeat start --strict.perms=false
-       echo "-----------------------------------------------------------"
-    fi
     
     # checks if a different username is set in ENV and create if its not existing yet
     if [ $SSH_USER != "not-set" ] && (! id -u "${SSH_USER}" >/dev/null 2>&1 ); then
@@ -146,6 +140,14 @@ if [ $RECOVERY_MODE = 0 ]; then
     sudo service apache2 restart
     echo "-----------------------------------------------------------"
     # --------------------------------------------------
+
+
+    if [ $FILEBEAT_ENABLED = 1 ]; then
+       echo "DOCKWARE: activating Filebeat..."
+       sudo service filebeat start --strict.perms=false
+       echo "-----------------------------------------------------------"
+    fi
+
 
     # before starting any commands
     # we always need to ensure we are back in our

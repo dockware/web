@@ -23,6 +23,10 @@
             <directory>./tests/features/custom-ssh</directory>
         </testsuite>
 
+        <testsuite name="Filebeat ON" dockerImage="dockware/flex:{{tag}}" dockerEnv="FILEBEAT_ENABLED=1">
+            <directory>./tests/features/filebeat-on</directory>
+        </testsuite>
+
         <testsuite name="Tideways ON" dockerImage="dockware/flex:{{tag}}" dockerEnv="TIDEWAYS_KEY=abc">
             <directory>./tests/features/tideways-on</directory>
         </testsuite>
