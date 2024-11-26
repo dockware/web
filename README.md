@@ -38,6 +38,25 @@ Explore more about Dockware Flex:
 
 Contributions are welcome! Please refer to the `CONTRIBUTING.md` file for guidelines on how to contribute effectively.
 
+
+## Features
+
+### Switch PHP 
+
+```bash 
+cd /var/www
+make switch-php version=8.2
+```
+
+### Switch Node
+
+```bash
+cd /var/www
+make switch-node version=20
+```
+
+
+
 ## License
 
 Dockware Flex is provided under the MIT license. As with all Docker images, this project may include software under other licenses. Users are responsible for ensuring compliance with all relevant licenses for software contained within the image.

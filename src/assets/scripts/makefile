@@ -7,41 +7,22 @@ XDEBUG_STATUS=$(shell php -r 'echo (int)extension_loaded("xdebug");')
 help:
 	@echo "COMMANDS"
 	@echo "---------------------------------------------------------------------------------------------------------"
-	@printf "\033[33mInstallation:%-30s\033[0m %s\n"
+	@printf "\033[33mSystem:%-30s\033[0m %s\n"
 	@grep -E '^[a-zA-Z_-]+:.*?##1 .*$$' $(firstword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?##1 "}; {printf "\033[33m  - %-30s\033[0m %s\n", $$1, $$2}'
 	@echo "---------------------------------------------------------------------------------------------------------"
 	@printf "\033[36mDev:%-30s\033[0m %s\n"
 	@grep -E '^[a-zA-Z_-]+:.*?##2 .*$$' $(firstword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?##2 "}; {printf "\033[36m  - %-30s\033[0m %s\n", $$1, $$2}'
-	@echo "---------------------------------------------------------------------------------------------------------"
-	@printf "\033[35mDevOps:%-30s\033[0m %s\n"
-	@grep -E '^[a-zA-Z_-]+:.*?##3 .*$$' $(firstword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?##3 "}; {printf "\033[35m  - %-30s\033[0m %s\n", $$1, $$2}'
 
-status: ##3 status infos
+# -------------------------------------------------------------------------------------------------
+
+status: ##1 Display status of the system
 	sh /var/www/scripts/bin/status.sh
 
-xdebug-on: ##2 enables xdebug
-	sh /var/www/scripts/bin/xdebug_enable.sh
-
-xdebug-off: ##2 disables xdebug
-	sh /var/www/scripts/bin/xdebug_disable.sh
-
-permission-repair: ##3 repairs the general file permissions
-	sudo chown -R www-data:www-data /var/www/html/*
-	sudo chmod -R 775 /var/www/html
-	cd /var/www/scripts/shopware6 && php create_jwt.php
-	cd /var/www/html/config/jwt && sudo chown www-data:www-data *
-
-restart-php: ##3 Restarts FPM and Apache2
-	sudo service php$(PHP_VERSION_CURRENT)-fpm stop
-	sudo service php$(PHP_VERSION_CURRENT)-fpm start
-	@# ------------------------------------------------------
-	sudo service apache2 restart
-
-switch-php: ##3 Switches to another supported PHP version, [make switch-php version=7.4]
+switch-php: ##1 Switches to another supported PHP version, [make switch-php version=x.y]
 ifndef version
 	$(warning Provide the required PHP version using "make switch-php version=x.y")
 	@exit 1;
-else
+endif
 	@# ATTENTION, keep this steps exactly like they are. they ensure that its fail-fast
 	@# non existing PHP versions will do nothing, switching to the same php version will also work
 	@# ---------------------------------------------------------------------------------------
@@ -66,7 +47,27 @@ else
 	make xdebug-off
 endif
 	php -v
+
+switch-node: ##1 Switches to another supported NodeJS version, [make switch-node version=x.y]
+ifndef version
+	$(warning Provide the required PHP version using "make switch-php version=x.y")
+	@exit 1;
 endif
+	nvm use $(version)
 
-# ---------------------------------------------------------------------------------------------
+permission-repair: ##1 Repairs file permissions
+	sudo chown -R 33:33 /var/www/html/*
+	sudo chmod -R 775 /var/www/html
 
+restart-php: ##1 Restarts FPM and Apache2
+	sudo service php$(PHP_VERSION_CURRENT)-fpm stop
+	sudo service php$(PHP_VERSION_CURRENT)-fpm start
+	sudo service apache2 restart
+
+# -------------------------------------------------------------------------------------------------
+
+xdebug-on: ##2 Enables Xdebug
+	sh /var/www/scripts/bin/xdebug_enable.sh
+
+xdebug-off: ##2 Disables Xdebug
+	sh /var/www/scripts/bin/xdebug_disable.sh
