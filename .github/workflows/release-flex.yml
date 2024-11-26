@@ -1,5 +1,5 @@
 name: Release Image
-run-name: ${{ github.event.inputs.tag }}, setLatest ${{ github.event.inputs.setLatest }}
+run-name: dockware/flex:${{ github.event.inputs.version }}, latest ${{ github.event.inputs.setLatest }}
 
 on:
   workflow_dispatch:
@@ -22,10 +22,10 @@ jobs:
       - name: Clone Code
         uses: actions/checkout@v4
 
-      - name: Release, Shopware ${{ github.event.inputs.swVersion }}
+      - name: Release Version ${{ github.event.inputs.swVersion }}
         uses: ./.github/actions/circleci
         with:
           VERSION: ${{ github.event.inputs.version }}
-          SET_LATEST: ${{ github.event.inputs.setLatest }}
+          SET_LATEST: false
           # -------------------------------------------
           CIRCLECI_KEY: ${{ secrets.CIRCLE_CI_TOKEN }}
