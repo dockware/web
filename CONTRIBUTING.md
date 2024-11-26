@@ -1,44 +1,49 @@
-# How to contribute?
+# How to Contribute?
 
 <!-- TOC -->
-* [How to contribute?](#how-to-contribute)
-  * [Modify PHP](#modify-php)
-  * [Modify Node](#modify-node)
-  * [Other changes](#other-changes)
+* [How to Contribute?](#how-to-contribute)
+  * [Modifying PHP](#modifying-php)
+  * [Modifying Node](#modifying-node)
+  * [Other Changes](#other-changes)
   * [Testing](#testing)
 <!-- TOC -->
 
+## Modifying PHP
 
-## Modify PHP
+All PHP installation scripts and configurations are located in **`./src/scripts/install_php.sh`** and the **`php`** directory.
 
-All PHP installations and configurations can be found in **./src/scripts/install_php.sh** as well as the **php** folder inside.
+To install a specific PHP version:
+1. Create a separate script in **`./src/scripts/php/install_phpX.Y.sh`**, where `X.Y` is the PHP version.
+2. Modify the **`./src/scripts/install_php.sh`** file to reference your new script.
 
-A specific PHP version should be installed in a separate file **./src/scripts/php/install_phpX.Y.sh**.
-To use that script, please modify the **./src/scripts/install_php.sh** file and add the PHP version.
-When building the image, the PHP modifications will be automatically applied.
+When building the image, your PHP modifications will be automatically applied.
 
-If you want to update PHP specific things for all PHP versions, please try to add it inside the **install_php.sh** file.
+If you need to make changes that affect all PHP versions:
+- Add the changes directly to **`install_php.sh`**.
 
-Things that are related to PHP, but not directly, should be added to the PHP **run layer** inside the **Dockerfile**.
+For PHP-related changes that are not tied to the PHP installation itself, include them in the PHP **run layer** within the **Dockerfile**.
 
-## Modify Node
+## Modifying Node
 
-All Node installations and configurations can be found in **./src/scripts/install_node.sh**.
-Please add the Node version to the **./src/scripts/install_node.sh** file.
-When building the image, the Node modifications will be automatically applied.
+All Node.js installation scripts and configurations are located in **`./src/scripts/install_node.sh`**.
 
-Things that are related to Node, but not directly, should be added to the Node **run layer** inside the **Dockerfile**.
+To install a specific Node.js version:
+- Add the version details to **`./src/scripts/install_node.sh`**.
 
-## Other changes
+When building the image, your Node.js modifications will be automatically applied.
 
-If you want to add or modify other things, please try to keep the **Dockerfile** as clean as possible.
-Installation of tools are only done in the run layer with **apt-get install** commands.
+For Node.js-related changes that are not tied to the Node.js installation itself, include them in the Node.js **run layer** within the **Dockerfile**.
+
+## Other Changes
+
+For any other modifications or additions:
+- Aim to keep the **Dockerfile** as clean and organized as possible.
+- Install additional tools or dependencies in the run layer using **`apt-get install`** commands.
 
 ## Testing
 
-When adding new features or modifying existing ones, please also write **SVRUnit** tests for them.
+When adding new features or modifying existing ones:
+1. Write corresponding **SVRUnit** tests to validate your changes.
+2. Execute the tests using the appropriate command in the **makefile**.
 
-You can then simply run the tests by executing the corresponding command in the **makefile**.
-
-SVRUnit tests are structured into different sections like **core**, **features**, **php* and **node**.
-This helps to keep the tests organized and easy to maintain.
+**SVRUnit** tests are categorized into sections such as **core**, **features**, **php**, and **node**. This structure ensures the tests are organized and easy to maintain.
