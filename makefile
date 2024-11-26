@@ -17,7 +17,6 @@ help:
 # ----------------------------------------------------------------------------------------------------------------
 
 install: ##1 Installs all dependencies
-	npm install
 	composer install
 
 clear: ##1 Clears all dependencies dangling images
