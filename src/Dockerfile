@@ -33,6 +33,7 @@ ENV XDEBUG_CONFIG "idekey=PHPSTORM"
 ENV PHP_IDE_CONFIG "serverName=localhost"
 ENV XDEBUG_ENABLED 0
 ENV FILEBEAT_ENABLED 0
+ENV SUPERVISOR_ENABLED 0
 ENV TIDEWAYS_KEY not-set
 
 # these are all our files that we need to setup the image
@@ -63,6 +64,7 @@ RUN echo "id:env-variables" && \
     && echo "export XDEBUG_CONFIG=${XDEBUG_CONFIG}" >> /etc/profile \
     && echo "export PHP_IDE_CONFIG=${PHP_IDE_CONFIG}" >> /etc/profile \
     && echo "export FILEBEAT_ENABLED=${FILEBEAT_ENABLED}" >> /etc/profile \
+    && echo "export SUPERVISOR_ENABLED=${SUPERVISOR_ENABLED}" >> /etc/profile \
     && echo "export TIDEWAYS_KEY=${TIDEWAYS_KEY}" >> /etc/profile
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -96,6 +98,7 @@ RUN echo "id:basics" && \
             jq \
             gpg-agent \
             rsync \
+            supervisor \
             jpegoptim \
             mysql-client \
             git git-lfs \

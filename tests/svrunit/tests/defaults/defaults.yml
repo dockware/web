@@ -43,6 +43,14 @@ commands:
     command: "service cron status"
     expected: "cron is running"
 
+  - name: "Supervisor is installed"
+    command: "echo SVRUNIT: $(supervisord --version)"
+    expected: "SVRUNIT: 4.2."
+
+  - name: "Supervisor is not running"
+    command: "sudo service supervisor status"
+    expected: "supervisord is  not running"
+
   - name: "GIT is installed"
     command: "git --version"
     expected: "git version 2.34"
