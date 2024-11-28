@@ -102,11 +102,14 @@ stderr_logfile=/var/log/worker.err.log
 
 ### Conjobs
 
+```bash  
 docker cp ./dev/config/shop/crontab.txt container:/var/www/crontab.txt
 docker exec -it container bash -c 'crontab /var/www/crontab.txt && sudo service cron restart'
+```
 
 ### Filebeat
 
+```bash  
 /etc/filebeat/filebeat.yml
 
 name: "shop"
@@ -121,6 +124,7 @@ filebeat.inputs:
 
 output.logstash:
 hosts: ["logstash:5044"]
+```
 
 ### SSH User
 
