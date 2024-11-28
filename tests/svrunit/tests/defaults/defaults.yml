@@ -59,6 +59,14 @@ commands:
     command: "git lfs --version"
     expected: "git-lfs/3.0.2 (GitHub"
 
+  - name: "Ubuntu timezone Europe/Berlin"
+    command: "sudo cat /etc/timezone"
+    expected: "Europe/Berlin"
+
+  - name: "PHP Timezone is Europe/Berlin"
+    command: "php -r \"echo date_default_timezone_get();\""
+    expected: "Europe/Berlin"
+
 file_exists:
 
   - name: "SSH Private Key exists"
