@@ -59,6 +59,66 @@ cd /var/www
 make switch-node version=20
 ```
 
+### Supervisor
+
+```bash
+ENV SUPERVISOR_ENABLED=1
+
+volume: /etc/supervisor/supervisord.conf
+
+[program:my-worker-process]
+process_name=%(program_name)s_%(process_num)02d
+command=php bin/console xyz
+directory=/var/www/html
+user=www-data
+group=www-data
+numprocs=2
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/backend-worker-ingest.out.log
+stderr_logfile=/var/log/backend-worker-ingest.err.log
+```
+
+
+### Conjobs
+
+
+docker cp ./dev/config/shop/crontab.txt container:/var/www/crontab.txt
+docker exec -it container bash -c 'crontab /var/www/crontab.txt && sudo service cron restart'
+
+
+### Filebeat
+
+/etc/filebeat/filebeat.yml
+
+name: "shop"
+
+filebeat.inputs:
+ 
+- type: log
+  enabled: true
+  paths:
+  - /var/www/html/var/log/*.log
+  tags: ["shop"]
+
+output.logstash:
+hosts: ["logstash:5044"]
+
+
+### SSH User
+
+### Tideways
+
+
+### XDebug
+
+### Set Custom Timezone
+
+### Recovery Mode
+
+### Set Custom Apache DocRoot
+
+
 
 
 ## License
