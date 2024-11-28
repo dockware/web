@@ -45,7 +45,7 @@ COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
 # these are identifier values
 # that are read and shown to the user about this image
-RUN mkdir /dockware && \
+RUN mkdir -p /dockware && \
     echo ${IMAGE_VERSION} > /dockware/version.txt && \
     date >/dockware/build-date.txt && \
     echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
