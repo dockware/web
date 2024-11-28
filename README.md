@@ -118,8 +118,14 @@ make xdebug-on
 make xdebug-off
 ```
 
-
 ### Set Custom Timezone
+
+You can adjust custom timezones for both the operating system as well as PHP by setting the following ENV variables.
+Dockware will automatically adjust settings and PHP configurations accordingly when you boot the image, or when you switch PHP versions.
+
+```bash
+ENV TZ=Europe/Berlin
+```
 
 ### Recovery Mode
 
