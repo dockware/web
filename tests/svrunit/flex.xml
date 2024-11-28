@@ -16,10 +16,6 @@
             <directory>./tests/features/recovery-mode</directory>
         </testsuite>
 
-        <testsuite name="Timezone can be set" group="features" dockerImage="dockware/flex:{{tag}}" dockerEnv="TZ=Asia/Tokyo">
-            <directory>./tests/features/timezone</directory>
-        </testsuite>
-
         <testsuite name="Custom SSH User" group="features" dockerImage="dockware/flex:{{tag}}" dockerEnv="SSH_USER=foo,SSH_PWD=bar">
             <directory>./tests/features/custom-ssh</directory>
         </testsuite>
@@ -34,6 +30,10 @@
 
         <testsuite name="Tideways ON" group="features" dockerImage="dockware/flex:{{tag}}" dockerEnv="TIDEWAYS_KEY=abc">
             <directory>./tests/features/tideways-on</directory>
+        </testsuite>
+
+        <testsuite name="Timezone can be set" group="features" dockerImage="dockware/flex:{{tag}}" dockerEnv="TZ=Asia/Tokyo">
+            <directory>./tests/features/timezone</directory>
         </testsuite>
 
         <testsuite name="XDebug OFF" group="features" dockerImage="dockware/flex:{{tag}}" dockerEnv="XDEBUG_ENABLED=0">

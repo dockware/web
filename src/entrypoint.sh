@@ -94,9 +94,14 @@ if [ $RECOVERY_MODE = 0 ]; then
     if [ "$PHP_VERSION" != "not-set" ]; then
       echo "DOCKWARE: switching to PHP ${PHP_VERSION}..."
       cd /var/www && make switch-php version=${PHP_VERSION}
-      sudo service apache2 stop
       echo "-----------------------------------------------------------"
+    else
+      CURRENT_PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;")
+      echo "DOCKWARE: Using default PHP version ${CURRENT_PHP_VERSION}..."
+      cd /var/www && make switch-php version=${CURRENT_PHP_VERSION}
     fi
+
+    sudo service apache2 stop
 
     CURRENT_PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;")
 

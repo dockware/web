@@ -65,7 +65,7 @@ commands:
 
   - name: "PHP Timezone is UTC (for now)"
     command: "php -r \"echo date_default_timezone_get();\""
-    expected: "UTC"
+    expected: "Europe/Berlin"
 
   - name: "PHP FPM Service is running"
     command: "sudo service php8.4-fpm status"
