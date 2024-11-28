@@ -23,6 +23,7 @@ Dockware Flex is designed to provide developers with an optimal environment that
 The original Dockware Flex image is available with the tag `legacy`.
 
 <!-- TOC -->
+
 * [Releases and Versions](#releases-and-versions)
 * [Documentation and Resources](#documentation-and-resources)
 * [Contribution](#contribution)
@@ -138,6 +139,12 @@ ENV SSH_PWD=shopware
 
 ### Tideways
 
+You can enable Tideways by setting the following ENV variable:
+
+```bash
+TIDEWAYS_KEY=abc
+```
+
 ### XDebug
 
 #### 1. Enable/Disable XDebug
@@ -151,6 +158,25 @@ make xdebug-on
 make xdebug-off
 ```
 
+#### 2. XDebug Configuration
+
+Xdebug should already work out of the box in most cases.
+If not, you can adjust the following ENV variables.
+
+```bash
+# Use default value for MAC + Windows, and 172.17.0.1 for Linux
+# Default value: host.docker.internal
+XDEBUG_REMOTE_HOST 
+
+# IDE Key identifier for XDebug
+# Default value: idekey=PHPSTORM
+XDEBUG_CONFIG
+
+# Used for the serverName export for XDebug usage on CLI
+# Default value: serverName=localhost
+PHP_IDE_CONFIG 
+```
+
 ### Set Custom Timezone
 
 You can adjust custom timezones for both the operating system as well as PHP by setting the following ENV variables.
@@ -162,7 +188,30 @@ ENV TZ=Europe/Berlin
 
 ### Recovery Mode
 
+Values: 1|0
+if enabled, nothing will be done in the entrypoint when booting dockware. This allows you to access the container on problems
+
+```bash 
+RECOVERY_MODE 
+```
+
 ### Set Custom Apache DocRoot
+
+```bash
+# Default value: /var/www/html/public
+APACHE_DOCROOT=/var/www/vhosts/xyz/html
+```
+
+### Running in CI/CD
+
+If you run containers with DOCKWARE_CI=1 the containers will automatically quit after running your command.
+Use this if you use dockware as command runner in your CI/CD system.
+Please note, your containers should automatically exit once a custom command is provided.
+This is just fa fallback if they do not exit as expected.
+
+```bash
+DOCKWARE_CI=1
+```
 
 ## License
 
