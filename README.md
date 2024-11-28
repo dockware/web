@@ -213,6 +213,20 @@ This is just fa fallback if they do not exit as expected.
 DOCKWARE_CI=1
 ```
 
+
+### Inject Bootstrap Script
+
+You can inject a custom script that will be executed on container boot.
+This can either be at the start or the end of the boot process.
+
+Mount any Shell script to the following paths:
+
+* `/var/www/boot_start.sh`
+* `/var/www/boot_end.sh`
+
+If dockware detects a script at these paths, it will execute them accordingly.
+
+        
 ## License
 
 Dockware Flex is provided under the MIT license. As with all Docker images, this project may include software under other licenses. Users are responsible for ensuring compliance with all relevant licenses for software contained within the image.
