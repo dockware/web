@@ -8,19 +8,12 @@ LABEL title="Dockware flex:latest" \
       version=${IMAGE_VERSION} \
       maintainer="dasistweb GmbH"
 
-# these are identifier values
-# that are read and shown to the user about this image
-RUN mkdir /dockware && \
-    echo ${IMAGE_VERSION} > /dockware/version.txt && \
-    date >/dockware/build-date.txt && \
-    echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
-    mkdir -p /var/www && \
-    mkdir -p /var/www/scripts && \
-    mkdir -p /var/dockware/cache
 
 ## ***********************************************************************
 ##  IMAGE VARIABLES
 ## ***********************************************************************
+ENV IMAGE_VERSION=${IMAGE_VERSION}
+
 ENV TZ Europe/Berlin
 ENV PHP_VERSION not-set
 ENV NODE_VERSION not-set
@@ -35,6 +28,7 @@ ENV XDEBUG_ENABLED 0
 ENV FILEBEAT_ENABLED 0
 ENV SUPERVISOR_ENABLED 0
 ENV TIDEWAYS_KEY not-set
+ENV BASH_ENV /var/www/.bashrc
 
 # these are all our files that we need to setup the image
 COPY --chmod=0755 ./scripts /dockware/tmp/scripts
@@ -49,7 +43,15 @@ COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
 # -------------------------------------------------------------------------------------------------------
 
-ENV BASH_ENV /var/www/.bashrc
+# these are identifier values
+# that are read and shown to the user about this image
+RUN mkdir /dockware && \
+    echo ${IMAGE_VERSION} > /dockware/version.txt && \
+    date >/dockware/build-date.txt && \
+    echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
+    mkdir -p /var/www && \
+    mkdir -p /var/www/scripts && \
+    mkdir -p /var/dockware/cache
 
 RUN echo "id:env-variables" && \
     echo "export TZ=${TZ}" >> /etc/profile \
