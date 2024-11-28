@@ -67,6 +67,10 @@ commands:
     command: "php -r \"echo date_default_timezone_get();\""
     expected: "UTC"
 
+  - name: "PHP FPM Service is running"
+    command: "sudo service php8.4-fpm status"
+    expected: "is running"
+
 file_exists:
 
   - name: "SSH Private Key exists"
