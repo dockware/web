@@ -22,6 +22,27 @@ Dockware Flex is designed to provide developers with an optimal environment that
 
 The original Dockware Flex image is available with the tag `legacy`.
 
+<!-- TOC -->
+* [Releases and Versions](#releases-and-versions)
+* [Documentation and Resources](#documentation-and-resources)
+* [Contribution](#contribution)
+* [Features](#features)
+    * [Switch PHP](#switch-php)
+    * [Switch Node](#switch-node)
+    * [Supervisor](#supervisor)
+    * [Conjobs](#conjobs)
+    * [Filebeat](#filebeat)
+    * [SSH User](#ssh-user)
+    * [Tideways](#tideways)
+    * [XDebug](#xdebug)
+        * [1. Enable/Disable XDebug](#1-enabledisable-xdebug)
+    * [Set Custom Timezone](#set-custom-timezone)
+    * [Recovery Mode](#recovery-mode)
+    * [Set Custom Apache DocRoot](#set-custom-apache-docroot)
+* [License](#license)
+
+<!-- TOC -->
+
 ## Releases and Versions
 
 Dockware Flex has two main types of releases:
@@ -102,6 +123,14 @@ output.logstash:
 hosts: ["logstash:5044"]
 
 ### SSH User
+
+The image has a built-in SFTP services.
+You can create a custom user for SFTP/SSH access by setting the following ENV variables:
+
+```bash
+ENV SSH_USER=shopware
+ENV SSH_PWD=shopware
+```
 
 ### Tideways
 
