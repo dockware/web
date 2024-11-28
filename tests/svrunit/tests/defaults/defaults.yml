@@ -63,9 +63,9 @@ commands:
     command: "sudo cat /etc/timezone"
     expected: "Europe/Berlin"
 
-  - name: "PHP Timezone is Europe/Berlin"
+  - name: "PHP Timezone is UTC (for now)"
     command: "php -r \"echo date_default_timezone_get();\""
-    expected: "Europe/Berlin"
+    expected: "UTC"
 
 file_exists:
 

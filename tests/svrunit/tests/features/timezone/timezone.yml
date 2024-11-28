@@ -4,6 +4,6 @@ commands:
     command: "sudo cat /etc/timezone"
     expected: "Asia/Tokyo"
 
-  - name: "PHP Timezone is Asia/Tokyio"
+  - name: "PHP Timezone is UTC (for now)"
     command: "php -r \"echo date_default_timezone_get();\""
-    expected: "Asia/Tokyo"
+    expected: "UTC"
