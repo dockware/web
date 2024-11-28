@@ -7,4 +7,4 @@ sudo mv /etc/php/${PHP_VERSION_RUNNING}/fpm/conf.d/20-xdebug.ini /etc/php/${PHP_
 sudo mv /etc/php/${PHP_VERSION_RUNNING}/cli/conf.d/20-xdebug.ini /etc/php/${PHP_VERSION_RUNNING}/cli/conf.d/20-xdebug.ini_disabled  > /dev/null 2>&1 &
 wait
 
-sudo service php${PHP_VERSION_RUNNING}-fpm restart > /dev/null 2>&1 &
+sudo service php${PHP_VERSION}-fpm restart > /dev/null 2>&1 &
