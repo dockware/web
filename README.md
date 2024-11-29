@@ -22,6 +22,8 @@ Dockware Flex is designed to provide developers with an optimal environment that
 
 The original Dockware Flex image is available with the tag `legacy`.
 
+We try to use the latest technologies (PHP, Node) as default version in our image.
+
 <!-- TOC -->
 
 * [Releases and Versions](#releases-and-versions)
