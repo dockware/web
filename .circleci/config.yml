@@ -185,11 +185,12 @@ commands:
             IMG: << parameters.imageName >>
             TAG: << parameters.imageTag >>
           command: |
-            docker run --rm -p 80:80 --name app -d dockware/$IMG:$TAG
+            cd tests/cypress
+            make start-env version=$TAG
             while ! curl -k -s -o /dev/null http://localhost; do echo Waiting for dockware; sleep 1; done
             sleep 5
             docker logs app
-            cd tests/cypress && make run url=http://localhost
+            make run url=http://localhost
       # ------------------------------------------------------------------------------------
       - run:
           name: Docker Hub Login
