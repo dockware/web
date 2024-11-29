@@ -1,19 +1,17 @@
 # Official Dockware Image
 # Copyright 2025 dasistweb GmbH
 #
-ARG IMAGE_VERSION
-
 FROM ubuntu:22.04
 LABEL title="Dockware flex:latest" \
       version=${IMAGE_VERSION} \
       maintainer="dasistweb GmbH"
 
 
+ARG IMAGE_VERSION
+
 ## ***********************************************************************
 ##  IMAGE VARIABLES
 ## ***********************************************************************
-ENV IMAGE_VERSION=${IMAGE_VERSION}
-
 ENV TZ Europe/Berlin
 ENV PHP_VERSION not-set
 ENV NODE_VERSION not-set
@@ -46,7 +44,7 @@ COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 # these are identifier values
 # that are read and shown to the user about this image
 RUN mkdir -p /dockware && \
-    echo ${IMAGE_VERSION} > /dockware/version.txt && \
+    echo "${IMAGE_VERSION}" > /dockware/version.txt && \
     date >/dockware/build-date.txt && \
     echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
     mkdir -p /var/www && \
@@ -108,10 +106,7 @@ RUN echo "id:basics" && \
             tideways-php tideways-daemon \
             filebeat && \
     mkdir /var/run/sshd && \
-    # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog
-    ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-    # TODO use TZ
-    echo "Europe/Berlin" > /etc/timezone && \
+    ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && echo "${TZ}" > /etc/timezone && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
