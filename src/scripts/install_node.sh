@@ -23,7 +23,6 @@ for version in "${NODE_VERSIONS[@]}"; do
   # we have to install yarn in additional node versions
   # otherwise it won't be found after a nvm switch
   npm install -g yarn
-  npm install -g bun
 done
 
 # -----------------------------------------------------------------------------------------

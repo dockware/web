@@ -1,5 +1,0 @@
-commands:
-
-  - name: "Bun is installed"
-    command: "bun --version"
-    expected: "1.1."
