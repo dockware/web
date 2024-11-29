@@ -15,6 +15,15 @@ clean: ## Cleans all dependencies
 
 # ---------------------------------------------------------------------------------------------
 
+start: ## Starts the environment
+ifndef version
+	$(error Please provide the argument version=xyz to run the command)
+endif
+	docker run --rm -p 80:80 --name app -d dockware/flex:$(version)
+
+stop: ## Stops the environment
+	docker stop app
+
 open-ui: ## Opens Cypress UI
 ifndef url
 	$(warning Please provide the URL argument to Start Cypress!)

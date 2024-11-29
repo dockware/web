@@ -44,6 +44,22 @@ The original Dockware Flex image is available with the tag `legacy`.
 
 <!-- TOC -->
 
+## Quick Start
+
+```bash 
+docker run -p 80:80 dockware/flex:latest
+```
+
+```yaml
+  website:
+    image: dockware/flex:latest
+    volumes:
+      - "./src:/var/www/html"
+    environment:
+      - PHP_VERSION=8.4
+      - NODE_VERSION=20
+```
+
 ## Releases and Versions
 
 Dockware Flex has two main types of releases:
@@ -213,7 +229,6 @@ This is just fa fallback if they do not exit as expected.
 DOCKWARE_CI=1
 ```
 
-
 ### Inject Bootstrap Script
 
 You can inject a custom script that will be executed on container boot.
@@ -226,7 +241,6 @@ Mount any Shell script to the following paths:
 
 If dockware detects a script at these paths, it will execute them accordingly.
 
-        
 ## License
 
 Dockware Flex is provided under the MIT license. As with all Docker images, this project may include software under other licenses. Users are responsible for ensuring compliance with all relevant licenses for software contained within the image.
