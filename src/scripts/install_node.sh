@@ -23,6 +23,7 @@ for version in "${NODE_VERSIONS[@]}"; do
   # we have to install yarn in additional node versions
   # otherwise it won't be found after a nvm switch
   npm install -g yarn
+  npm install -g bun
 done
 
 # -----------------------------------------------------------------------------------------
@@ -44,3 +45,5 @@ chown 33:33 /var/www/.nvm -R
 echo "source /var/www/.nvm/nvm.sh" >> /var/www/.bashrc
 chown 33:33 /var/www/.bashrc
 echo "export BASH_ENV=${BASH_ENV}" >> /etc/profile
+
+

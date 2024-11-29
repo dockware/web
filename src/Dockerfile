@@ -210,10 +210,9 @@ RUN echo "id:php" && \
 ## ***********************************************************************
 
 RUN echo "id:node" && \
-    cd /dockware/tmp/scripts && bash install_node.sh \
-    && mkdir /var/www/.npm   \
-    && npm config set cache /var/www/.npm \
-    && cd /var/www && npm install -g --no-install-recommends yarn && \
+    cd /dockware/tmp/scripts && bash install_node.sh && \
+    mkdir /var/www/.npm && \
+    npm config set cache /var/www/.npm && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
@@ -226,8 +225,6 @@ RUN echo "id:permissions" && \
     chown 33:33 -R /var/www/.npm && \
     chown 33:33 -R /var/www/scripts && \
     chown 33:33 -R /var/www/html && \
-    # make sure for the whole installation xdebug is off for performance
-    sh /var/www/scripts/bin/xdebug_disable.sh && \
     rm -rf /dockware/tmp && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
