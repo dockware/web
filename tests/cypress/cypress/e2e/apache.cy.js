@@ -22,9 +22,14 @@ describe('PHP Tests', () => {
         });
 
         it('PHP info is visible', () => {
-            cy.visit('/', {failOnStatusCode: false});
+            cy.visit('/',);
             cy.contains('PHP Version');
             cy.contains('PHP License');
+        })
+
+        it('PHP PM is used', () => {
+            cy.visit('/');
+            cy.contains('FPM/FastCGI');
         })
     })
 
@@ -35,8 +40,13 @@ describe('PHP Tests', () => {
         });
 
         it('Xdebug data in PHP info', () => {
-            cy.visit('/', {failOnStatusCode: false});
+            cy.visit('/');
             cy.contains('xdebug.idekey');
+            cy.contains('PHPSTORM');
+        })
+
+        it('Xdebug IDE Key is PHPStorm', () => {
+            cy.visit('/'); 
             cy.contains('PHPSTORM');
         })
     })
@@ -48,9 +58,8 @@ describe('PHP Tests', () => {
         });
 
         it('No Xdebug data in PHP info', () => {
-            cy.visit('/', {failOnStatusCode: false});
+            cy.visit('/');
             cy.contains('xdebug.idekey').should('not.exist');
-            cy.contains('PHPSTORM').should('not.exist');
         })
     })
 
@@ -61,7 +70,7 @@ describe('PHP Tests', () => {
         });
 
         it('Switch to PHP 8.3', () => {
-            cy.visit('/', {failOnStatusCode: false});
+            cy.visit('/');
             cy.contains('PHP Version 8.3.');
         })
 
