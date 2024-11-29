@@ -1,8 +1,7 @@
-
 describe('Apache Tests', () => {
 
     before(() => {
-        cy.exec('bash cypress/support/scripts/clear-container.sh');
+        cy.script('clear-container.sh');
     });
 
     it('Empty Apache Exists', () => {
@@ -18,7 +17,7 @@ describe('Apache Tests', () => {
 describe('PHP Tests', () => {
 
     before(() => {
-        cy.exec('bash cypress/support/scripts/setup-phpinfo.sh');
+        cy.script('setup-phpinfo.sh');
     });
 
     it('PHP is rendered', () => {

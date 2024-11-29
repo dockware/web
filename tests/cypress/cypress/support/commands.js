@@ -40,3 +40,7 @@ Cypress.log = function (opts, ...other) {
 
     return origLog(opts, ...other);
 };
+
+Cypress.Commands.add('script', (filename) => {
+    cy.exec('bash cypress/support/scripts/' + filename);
+});
