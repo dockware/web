@@ -48,7 +48,8 @@ if [ $RECOVERY_MODE = 0 ]; then
     sudo ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
     sudo dpkg-reconfigure -f noninteractive tzdata
     echo "-----------------------------------------------------------"
-    
+
+    # TODO custom scripts?
     # checks if a different username is set in ENV and create if its not existing yet
     if [ $SSH_USER != "not-set" ] && (! id -u "${SSH_USER}" >/dev/null 2>&1 ); then
         echo "DOCKWARE: creating additional SSH user...."

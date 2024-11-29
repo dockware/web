@@ -15,6 +15,7 @@ PHP_VERSIONS=(
     # "5.6:20131226"
 )
 
+# TODO in readme kommunizieren dass immer die aktuelle version bei PHP und NODE ist
 DEFAULT_PHP_VERSION=8.4
 
 # -----------------------------------------------------------------------------------------

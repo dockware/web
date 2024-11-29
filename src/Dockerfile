@@ -110,6 +110,7 @@ RUN echo "id:basics" && \
     mkdir /var/run/sshd && \
     # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog
     ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
+    # TODO use TZ
     echo "Europe/Berlin" > /etc/timezone && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
