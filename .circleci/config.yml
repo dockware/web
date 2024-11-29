@@ -168,7 +168,7 @@ commands:
       - run:
           name: Run SVRUnit Tests
           command: |
-            make test version=<< parameters.imageTag >> -B
+            make svrunit version=<< parameters.imageTag >> -B
       - store_test_results:
           path: .reports
       - store_artifacts:

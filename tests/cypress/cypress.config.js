@@ -3,7 +3,7 @@ const {defineConfig} = require('cypress')
 module.exports = defineConfig({
     chromeWebSecurity: false,
     retries: {
-        "runMode": 3,
+        "runMode": 0,
         "openMode": 0
     },
     watchForFileChanges: false,
