@@ -214,8 +214,6 @@ RUN echo "id:node" && \
     mkdir /var/www/.npm && \
     npm config set cache /var/www/.npm && \
     cd /var/www && npm install -g --no-install-recommends yarn && \
-    tar -cf - -C /var/www/.nvm . | zstd --ultra -22 -o /var/www/nvm.tar.zst && \
-    rm -rf /var/www/.nvm/* && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 

@@ -24,13 +24,6 @@ echo ""
 set -e
 
 
-echo "DOCKWARE: decompressing NVM..."
-sudo zstd -d /var/www/nvm.tar.zst -o /var/www/nvm.tar
-sudo tar -xf /var/www/nvm.tar -C /var/www/.nvm
-sudo rm /var/www/nvm.tar.zst /var/www/nvm.tar
-sudo chown 33:33 /var/www/.nvm -R
-
-
 source /etc/apache2/envvars
 source /var/www/.bashrc
 
