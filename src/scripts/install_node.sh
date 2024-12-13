@@ -2,6 +2,8 @@
 
 NODE_VERSIONS=("22" "20")
 
+# TODO node 18?
+# TODO pnpm, bun, pm2
 DEFAULT_NODE_VERSION=22
 
 
@@ -42,3 +44,5 @@ chown 33:33 /var/www/.nvm -R
 echo "source /var/www/.nvm/nvm.sh" >> /var/www/.bashrc
 chown 33:33 /var/www/.bashrc
 echo "export BASH_ENV=${BASH_ENV}" >> /etc/profile
+
+

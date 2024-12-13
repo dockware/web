@@ -32,7 +32,7 @@ To install a specific Node.js version:
 
 When building the image, your Node.js modifications will be automatically applied.
 
-For Node.js-related changes that are not tied to the Node.js installation itself, include them in the Node.js **run layer** within the **Dockerfile**.
+Adding additional NPM packages should also take place in the **`install_node.sh`** script.
 
 ## Other Changes
 

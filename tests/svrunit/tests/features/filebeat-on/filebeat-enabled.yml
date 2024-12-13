@@ -1,4 +1,4 @@
 commands:
   - name: "Filebeat is running"
-    command: "sudo service filebeat status"
+    command: "sleep 3 && sudo service filebeat status"
     expected: "filebeat is running"

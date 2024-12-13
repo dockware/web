@@ -1,22 +1,13 @@
 # Official Dockware Image
 # Copyright 2025 dasistweb GmbH
 #
-ARG IMAGE_VERSION
-
 FROM ubuntu:22.04
 LABEL title="Dockware flex:latest" \
       version=${IMAGE_VERSION} \
       maintainer="dasistweb GmbH"
 
-# these are identifier values
-# that are read and shown to the user about this image
-RUN mkdir /dockware && \
-    echo ${IMAGE_VERSION} > /dockware/version.txt && \
-    date >/dockware/build-date.txt && \
-    echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
-    mkdir -p /var/www && \
-    mkdir -p /var/www/scripts && \
-    mkdir -p /var/dockware/cache
+
+ARG IMAGE_VERSION
 
 ## ***********************************************************************
 ##  IMAGE VARIABLES
@@ -35,6 +26,7 @@ ENV XDEBUG_ENABLED 0
 ENV FILEBEAT_ENABLED 0
 ENV SUPERVISOR_ENABLED 0
 ENV TIDEWAYS_KEY not-set
+ENV BASH_ENV /var/www/.bashrc
 
 # these are all our files that we need to setup the image
 COPY --chmod=0755 ./scripts /dockware/tmp/scripts
@@ -49,7 +41,15 @@ COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
 # -------------------------------------------------------------------------------------------------------
 
-ENV BASH_ENV /var/www/.bashrc
+# these are identifier values
+# that are read and shown to the user about this image
+RUN mkdir -p /dockware && \
+    echo "${IMAGE_VERSION}" > /dockware/version.txt && \
+    date >/dockware/build-date.txt && \
+    echo "$(date +%Y) dasistweb GmbH" > /dockware/copyright.txt && \
+    mkdir -p /var/www && \
+    mkdir -p /var/www/scripts && \
+    mkdir -p /var/dockware/cache
 
 RUN echo "id:env-variables" && \
     echo "export TZ=${TZ}" >> /etc/profile \
@@ -106,9 +106,7 @@ RUN echo "id:basics" && \
             tideways-php tideways-daemon \
             filebeat && \
     mkdir /var/run/sshd && \
-    # TIMEZONE SETTINGS, otherwise we would have an interactive input dialog
-    ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-    echo "Europe/Berlin" > /etc/timezone && \
+    ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && echo "${TZ}" > /etc/timezone && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -212,10 +210,10 @@ RUN echo "id:php" && \
 ## ***********************************************************************
 
 RUN echo "id:node" && \
-    cd /dockware/tmp/scripts && bash install_node.sh \
-    && mkdir /var/www/.npm   \
-    && npm config set cache /var/www/.npm \
-    && cd /var/www && npm install -g --no-install-recommends yarn && \
+    cd /dockware/tmp/scripts && bash install_node.sh && \
+    mkdir /var/www/.npm && \
+    npm config set cache /var/www/.npm && \
+    cd /var/www && npm install -g --no-install-recommends yarn && \
     tar -cf - -C /var/www/.nvm . | zstd --ultra -22 -o /var/www/nvm.tar.zst && \
     rm -rf /var/www/.nvm/* && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -230,8 +228,6 @@ RUN echo "id:permissions" && \
     chown 33:33 -R /var/www/.npm && \
     chown 33:33 -R /var/www/scripts && \
     chown 33:33 -R /var/www/html && \
-    # make sure for the whole installation xdebug is off for performance
-    sh /var/www/scripts/bin/xdebug_disable.sh && \
     rm -rf /dockware/tmp && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

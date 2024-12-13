@@ -59,6 +59,18 @@ commands:
     command: "git lfs --version"
     expected: "git-lfs/3.0.2 (GitHub"
 
+  - name: "Ubuntu timezone Europe/Berlin"
+    command: "sudo cat /etc/timezone"
+    expected: "Europe/Berlin"
+
+  - name: "PHP Timezone is UTC (for now)"
+    command: "php -r \"echo date_default_timezone_get();\""
+    expected: "Europe/Berlin"
+
+  - name: "PHP FPM Service is running"
+    command: "sudo service php8.4-fpm status"
+    expected: "is running"
+
 file_exists:
 
   - name: "SSH Private Key exists"

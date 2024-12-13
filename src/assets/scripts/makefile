@@ -26,6 +26,9 @@ endif
 	@# ATTENTION, keep this steps exactly like they are. they ensure that its fail-fast
 	@# non existing PHP versions will do nothing, switching to the same php version will also work
 	@# ---------------------------------------------------------------------------------------
+	sudo sed -i '/^date\.timezone/c\date.timezone = $(TZ)' /etc/php/$(version)/fpm/conf.d/01-general.ini
+	sudo sed -i '/^date\.timezone/c\date.timezone = $(TZ)' /etc/php/$(version)/cli/conf.d/01-general.ini
+	@# ---------------------------------------------------------------------------------------
 	@# Start new PHP to see if its existing, then stop current one, and if we use the same php version that
 	@# is currently used, just make sure to start it again ;)
 	sudo service php$(version)-fpm start

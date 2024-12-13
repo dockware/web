@@ -62,3 +62,11 @@ ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
 	php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(version) --debug --report-junit --report-html
+
+cypress: ##3 Runs all Cypress tests
+ifndef version
+	$(error Please provide the argument version=xyz to run the command)
+endif
+	cd ./tests/cypress && make install
+	cd ./tests/cypress && make start-env version=$(version)
+	cd ./tests/cypress && make run url=http://localhost || (make stop-env && false)
