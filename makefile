@@ -27,6 +27,15 @@ clear: ##1 Clears all dependencies dangling images
 
 # ----------------------------------------------------------------------------------------------------------------
 
+all: ##2 Builds, Tests and Analyzes the image (make all version=xyz)
+ifndef version
+	$(error Please provide the argument version=xyz to run the command)
+endif
+	make build   version=$(version)
+	make svrunit version=$(version)
+	make cypress version=$(version)
+	make analyze version=$(version)
+
 build: ##2 Builds the image
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
@@ -48,7 +57,7 @@ endif
 
 # ----------------------------------------------------------------------------------------------------------------
 
-test: ##3 Runs all SVRUnit tests
+svrunit: ##3 Runs all SVRUnit tests
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
