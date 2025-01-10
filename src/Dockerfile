@@ -213,6 +213,7 @@ RUN echo "id:node" && \
     cd /dockware/tmp/scripts && bash install_node.sh && \
     mkdir /var/www/.npm && \
     npm config set cache /var/www/.npm && \
+    cd /var/www && npm install -g --no-install-recommends yarn && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
