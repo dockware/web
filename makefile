@@ -31,7 +31,7 @@ all: ##2 Builds, Tests and Analyzes the image (make all version=xyz)
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	make build   version=$(version)
+	@cd ./src && DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) -t dockware/web:$(version) .
 	make svrunit version=$(version)
 	make cypress version=$(version)
 	make analyze version=$(version)
@@ -40,20 +40,20 @@ build: ##2 Builds the image
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	@cd ./src && DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) -t dockware/flex:$(version) .
+
 
 analyze: ##2 Shows the size of the image
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	docker history --format "{{.CreatedBy}}\t\t{{.Size}}" dockware/flex:$(version) | grep -v "0B"
+	docker history --format "{{.CreatedBy}}\t\t{{.Size}}" dockware/web:$(version) | grep -v "0B"
 	# --------------------------------------------------
-	docker save -o flex.tar dockware/flex:$(version)
-	gzip flex.tar
-	ls -lh flex.tar.gz
+	docker save -o web.tar dockware/web:$(version)
+	gzip web.tar
+	ls -lh web.tar.gz
 	# --------------------------------------------------
-	rm -rf flex.tar
-	rm -rf flex.tar.gz | true
+	rm -rf web.tar
+	rm -rf web.tar.gz | true
 
 # ----------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ svrunit: ##3 Runs all SVRUnit tests
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	php ./vendor/bin/svrunit test --configuration=./tests/svrunit/flex.xml --docker-tag=$(version) --debug --report-junit --report-html
+	php ./vendor/bin/svrunit test --configuration=./tests/svrunit/suite.xml --docker-tag=$(version) --debug --report-junit --report-html
 
 cypress: ##3 Runs all Cypress tests
 ifndef version

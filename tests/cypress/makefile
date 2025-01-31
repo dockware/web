@@ -28,11 +28,11 @@ start-env: ##2 Starts the environment
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	docker rm -f flex_cypress || true
-	docker run --rm -p 80:80 --name flex_cypress -d dockware/flex:$(version)
+	docker rm -f web_cypress || true
+	docker run --rm -p 80:80 --name web_cypress -d dockware/web:$(version)
 
 stop-env: ##2 Stops the environment
-	docker stop flex_cypress
+	docker stop web_cypress
 
 # ---------------------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ ifndef url
 endif
 	CYPRESS_BASE_URL=$(url) CYPRESS_SHOPWARE=$(shopware) ./node_modules/.bin/cypress open --env conf=dev
 
-run: ##3 Runs all E2E tests for Flex
+run: ##3 Runs all E2E tests for web
 ifndef url
 	$(warning Please provide the URL argument to Start Cypress!)
 	@exit 1

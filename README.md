@@ -1,16 +1,16 @@
-# Dockware Flex
+# Dockware web
 
 ![Shopware 6 Preview](./header.jpg)
 
 [![MIT licensed](https://img.shields.io/github/license/dockware/dockware.svg?style=flat-square)](https://github.com/dockware/dockware/blob/master/LICENSE)
-![Docker Pulls](https://img.shields.io/docker/pulls/dockware/flex)
-![Docker Image Size](https://img.shields.io/docker/image-size/dockware/flex)
+![Docker Pulls](https://img.shields.io/docker/pulls/dockware/web)
+![Docker Image Size](https://img.shields.io/docker/image-size/dockware/web)
 
-Welcome to Dockware Flex! For more information, visit [dockware.io](https://dockware.io).
+Welcome to Dockware web! For more information, visit [dockware.io](https://dockware.io).
 
-## What is Dockware Flex?
+## What is Dockware web?
 
-Dockware Flex is designed to provide developers with an optimal environment that includes multiple "latest" PHP and Node.js versions, Xdebug, and essential tools. Its goal is to streamline development workflows with an up-to-date and clean setup.
+Dockware web is designed to provide developers with an optimal environment that includes multiple "latest" PHP and Node.js versions, Xdebug, and essential tools. Its goal is to streamline development workflows with an up-to-date and clean setup.
 
 ### Key Features:
 
@@ -18,9 +18,9 @@ Dockware Flex is designed to provide developers with an optimal environment that
 - Semantic versioning releases (e.g., `2.0.0`, `2.0.1`, etc.).
 - Comprehensive changelog available in `CHANGELOG.md`.
 - Legacy-free design: removes outdated components like PHP 5.6.
-- Flexibility for modern development while continuously evolving with new tools and removing outdated ones.
+- webibility for modern development while continuously evolving with new tools and removing outdated ones.
 
-The original Dockware Flex image is available with the tag `legacy`.
+The original Dockware web image is available with the tag `legacy`.
 
 We try to use the latest technologies (PHP, Node) as default version in our image.
 
@@ -49,12 +49,12 @@ We try to use the latest technologies (PHP, Node) as default version in our imag
 ## Quick Start
 
 ```bash 
-docker run -p 80:80 dockware/flex:latest
+docker run -p 80:80 dockware/web:latest
 ```
 
 ```yaml
   website:
-    image: dockware/flex:latest
+    image: dockware/web:latest
     volumes:
       - "./src:/var/www/html"
     environment:
@@ -64,7 +64,7 @@ docker run -p 80:80 dockware/flex:latest
 
 ## Releases and Versions
 
-Dockware Flex has two main types of releases:
+Dockware web has two main types of releases:
 
 1. **Nightly Builds**: Available with the tag `dev-main`.
 2. **Stable Versions**: Versioned releases like `2.0.0`, `2.0.1`, etc.
@@ -73,7 +73,7 @@ Check the `CHANGELOG.md` file for details on all changes and updates. The change
 
 ## Documentation and Resources
 
-Explore more about Dockware Flex:
+Explore more about Dockware web:
 
 - **Website**: [dockware.io](https://dockware.io)
 - **Documentation**: Detailed guides and resources are available on the website.
@@ -245,4 +245,4 @@ If dockware detects a script at these paths, it will execute them accordingly.
 
 ## License
 
-Dockware Flex is provided under the MIT license. As with all Docker images, this project may include software under other licenses. Users are responsible for ensuring compliance with all relevant licenses for software contained within the image.
+Dockware web is provided under the MIT license. As with all Docker images, this project may include software under other licenses. Users are responsible for ensuring compliance with all relevant licenses for software contained within the image.
