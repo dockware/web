@@ -10,3 +10,5 @@
 /.reports
 /tmp-image.tar.gz
 /.idea/flex.iml
+/.idea/workspace.xml
+/.idea/web.iml
