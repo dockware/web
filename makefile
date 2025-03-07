@@ -69,4 +69,4 @@ ifndef version
 endif
 	cd ./tests/cypress && make install
 	cd ./tests/cypress && make start-env version=$(version)
-	cd ./tests/cypress && make run url=http://localhost || (make stop-env && false)
+	cd ./tests/cypress && make run url=http://localhost:1000 || (make stop-env && false)
