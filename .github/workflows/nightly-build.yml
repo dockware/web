@@ -3,9 +3,8 @@ run-name: dockware/web:dev-main
 
 on:
   workflow_dispatch:
-  on:
-    schedule:
-      - cron: "0 1 * * *"
+  schedule:
+    - cron: "0 1 * * *"
 
 jobs:
 
