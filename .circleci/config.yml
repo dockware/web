@@ -161,7 +161,7 @@ commands:
     steps:
       # ------------------------------------------------------------------------------------
       - run:
-          name: Build Image flex:<< parameters.imageTag >>
+          name: Build Image web:<< parameters.imageTag >>
           command: |
             make build version=<< parameters.imageTag >> -B
       # ------------------------------------------------------------------------------------
