@@ -138,8 +138,8 @@ commands:
           key: vendor-cache
           paths:
             - vendor
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y php-cli php-xml unzip
+      - run: sudo apt-get update 
+      - run: sudo apt-get install -y php8.2-cli php8.2-xml unzip
       - run: php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
       - run: php composer-setup.php
       - run: sudo mv composer.phar /usr/local/bin/composer
