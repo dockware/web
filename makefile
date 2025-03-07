@@ -31,7 +31,7 @@ all: ##2 Builds, Tests and Analyzes the image (make all version=xyz)
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	@cd ./src && DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) -t dockware/web:$(version) .
+	make build version=$(version)
 	make svrunit version=$(version)
 	make cypress version=$(version)
 	make analyze version=$(version)
@@ -40,7 +40,7 @@ build: ##2 Builds the image
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-
+	@cd ./src && DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) -t dockware/web:$(version) .
 
 analyze: ##2 Shows the size of the image
 ifndef version
