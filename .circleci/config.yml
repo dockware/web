@@ -42,8 +42,8 @@ workflows:
           imageTag: << pipeline.parameters.imageTag >>
           setLatest: << pipeline.parameters.setLatest >>
           requires:
-            - build-arm
-            - build-amd
+            - dockware/<< pipeline.parameters.imageName >>:<< pipeline.parameters.imageTag >>-arm-64
+            - dockware/<< pipeline.parameters.imageName >>:<< pipeline.parameters.imageTag >>-amd-64
 
 # -----------------------------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
