@@ -27,12 +27,12 @@ workflows:
             equal: [ "", << pipeline.parameters.imageName >> ]
     jobs:
       - job-build-arm64:
-          name: build-arm
+          name: dockware/<< pipeline.parameters.imageName >>:<< pipeline.parameters.imageTag >>-arm-64
           imageName: << pipeline.parameters.imageName >>
           imageTag: << pipeline.parameters.imageTag >>
       # ------------------------------------------------------------------------------------
       - job-build-amd64:
-          name: build-amd
+          name: dockware/<< pipeline.parameters.imageName >>:<< pipeline.parameters.imageTag >>-amd-64
           imageName: << pipeline.parameters.imageName >>
           imageTag: << pipeline.parameters.imageTag >>
       # ------------------------------------------------------------------------------------
@@ -138,8 +138,11 @@ commands:
           key: vendor-cache
           paths:
             - vendor
-      - run: sudo apt-get update 
-      - run: sudo apt-get install -y php8.2-cli php8.2-xml unzip
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y software-properties-common
+      - run: sudo add-apt-repository ppa:ondrej/php -y
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y php8.2 php8.2-cli php8.2-xml unzip
       - run: php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
       - run: php composer-setup.php
       - run: sudo mv composer.phar /usr/local/bin/composer
