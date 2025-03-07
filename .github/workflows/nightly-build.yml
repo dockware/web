@@ -1,0 +1,26 @@
+name: Nightly Build
+run-name: dockware/web:dev-main
+
+on:
+  workflow_dispatch:
+  on:
+    schedule:
+      - cron: "0 1 * * *"
+
+jobs:
+
+  on-push:
+    name: Release Image
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Clone Code
+        uses: actions/checkout@v4
+
+      - name: Release Version "dev-main"
+        uses: ./.github/actions/circleci
+        with:
+          VERSION: dev-main
+          SET_LATEST: false
+          # -------------------------------------------
+          CIRCLECI_KEY: ${{ secrets.CIRCLE_CI_TOKEN }}

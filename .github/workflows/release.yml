@@ -1,5 +1,5 @@
 name: Release Image
-run-name: dockware/flex:${{ github.event.inputs.version }}, latest ${{ github.event.inputs.setLatest }}
+run-name: dockware/web:${{ github.event.inputs.version }}, latest ${{ github.event.inputs.setLatest }}
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         description: 'Image Version'
         required: true
       setLatest:
-        description: 'Set Latest Tag'
+        description: 'Is this the latest version?'
         type: boolean
         required: true
 
