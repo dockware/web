@@ -27,3 +27,5 @@ php_module:
     module: "amqp"
   - name: "PHP Module: mongo"
     module: "mongo"
+  - name: "PHP Module: zstd"
+    module: "zstd"

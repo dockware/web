@@ -20,6 +20,7 @@ apt-get install -y  php8.3-fpm \
                     php8.3-amqp \
                     php8.3-apcu \
                     php8.3-pcov \
+                    php8.3-zstd \
                     php8.3-mongo
 
 pecl install xdebug

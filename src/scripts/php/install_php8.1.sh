@@ -22,4 +22,5 @@
                     php8.1-pcov \
                     php8.1-mongo \
                     php8.1-xdebug \
+                    php8.1-zstd \
                     php8.1-amqp

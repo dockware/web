@@ -31,3 +31,5 @@ php_module:
     module: "pcov"
   - name: "PHP Module: mongo"
     module: "mongo"
+  - name: "PHP Module: zstd"
+    module: "zstd"
