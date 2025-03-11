@@ -39,6 +39,11 @@ to PHP 8.4 and Node 20.
       - NODE_VERSION=20
 ```
 
+## Documentation
+
+For all these cool features like Xdebug, Filebeat, PHP Switching, Supervisor and more,
+please check out the Docs at [https://dockware.io](https://dockware.io).
+
 ## Releases and Versions
 
 Dockware web has two main types of releases:
