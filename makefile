@@ -26,6 +26,7 @@ install: ##1 Installs all dependencies
 clear: ##1 Clears all dependencies and dangling images
 	rm -rf vendor/*
 	rm -rf node_modules/*
+	cd tests/cypress && make clean
 	docker images -aq -f 'dangling=true' | xargs docker rmi
 	docker volume ls -q -f 'dangling=true' | xargs docker volume rm
 
