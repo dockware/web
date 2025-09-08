@@ -1,7 +1,7 @@
 commands:
-  - name: "Check Ubuntu 22.04"
+  - name: "Check Ubuntu 24.04"
     command: "lsb_release -a"
-    expected: "Ubuntu 22.04"
+    expected: "Ubuntu 24.04"
 
   - name: "SUDO is installed"
     command: "sudo"
