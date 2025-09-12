@@ -1,6 +1,6 @@
 # Dockware WEB
 
-[![MIT licensed](https://img.shields.io/github/license/dockware/dockware.svg?style=flat-square)](https://github.com/dockware/dockware/blob/master/LICENSE)
+[![MIT licensed](https://img.shields.io/github/license/dockware/web.svg?style=flat-square)](https://github.com/dockware/dockware/blob/master/LICENSE)
 ![Docker Pulls](https://img.shields.io/docker/pulls/dockware/web)
 ![Docker Image Size](https://img.shields.io/docker/image-size/dockware/web)
 
