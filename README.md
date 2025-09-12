@@ -1,9 +1,5 @@
 # Dockware WEB
 
-[![MIT licensed](https://img.shields.io/github/license/dockware/web.svg?style=flat-square)](https://github.com/dockware/dockware/blob/master/LICENSE)
-![Docker Pulls](https://img.shields.io/docker/pulls/dockware/web)
-![Docker Image Size](https://img.shields.io/docker/image-size/dockware/web)
-
 Welcome to the dockware Docker images! For more information, visit [dockware.io](https://dockware.io).
 
 ## What is Dockware WEB?
