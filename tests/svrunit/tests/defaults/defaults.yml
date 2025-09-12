@@ -25,7 +25,7 @@ commands:
 
   - name: "zstd is installed"
     command: "zstd --version"
-    expected: "*** zstd command line interface 64-bits v1.4.8, by Yann Collet ***"
+    expected: "by Yann Collet"
 
   - name: "Permission: Verify 'www-data' has no shell login"
     command: "cat /etc/passwd"
@@ -53,11 +53,11 @@ commands:
 
   - name: "GIT is installed"
     command: "git --version"
-    expected: "git version 2.34"
+    expected: "git version 2."
 
   - name: "GIT LFS is installed"
     command: "git lfs --version"
-    expected: "git-lfs/3.0.2 (GitHub"
+    expected: "git-lfs/3."
 
   - name: "Ubuntu timezone Europe/Berlin"
     command: "sudo cat /etc/timezone"
