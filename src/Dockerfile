@@ -101,7 +101,7 @@ RUN echo "id:basics" && \
             supervisor \
             jpegoptim \
             mysql-client \
-            git git-lfs \
+            git git-lfs patch \
             apache2 libapache2-mod-fcgid  \
             tideways-php tideways-daemon \
             filebeat && \
