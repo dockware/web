@@ -3,11 +3,11 @@
 All notable changes of releases are documented in this file
 using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
-## [Unreleased]
+## [1.1.0]
 
 ### Added
 
-- Add "patch" package to support Composer Patching vendors.
+- Add "patch" package to support patching Composer vendors
 
 ## [1.0.0]
 
