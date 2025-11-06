@@ -5,6 +5,10 @@ using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
 ## [Unreleased]
 
+### Changed
+
+- Remove "Xdebug Beta" for PHP 8.4 and switch to official release
+
 ### Fixed
 
 - It was possible to start the image with an unsupported Node version which led to problems. The container will now crash during startup to give you immediate feedback.
