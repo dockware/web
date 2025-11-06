@@ -5,6 +5,10 @@ using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
 ## [Unreleased]
 
+### Added
+
+- Add PHP 8.5
+
 ### Changed
 
 - Remove "Xdebug Beta" for PHP 8.4 and switch to official release
