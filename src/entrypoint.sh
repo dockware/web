@@ -74,6 +74,7 @@ if [ $RECOVERY_MODE = 0 ]; then
        sudo rm -f /usr/local/bin/npm
        sudo ln -s "$(which node)" "/usr/local/bin/node"
        sudo ln -s "$(which npm)" "/usr/local/bin/npm"
+       nvm use ${NODE_VERSION}
        echo "-----------------------------------------------------------"
     fi
 

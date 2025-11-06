@@ -3,6 +3,12 @@
 All notable changes of releases are documented in this file
 using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
+## [Unreleased]
+
+### Fixed
+
+- It was possible to start the image with an unsupported Node version which led to problems. The container will now crash during startup to give you immediate feedback.
+
 ## [1.1.0]
 
 ### Added
