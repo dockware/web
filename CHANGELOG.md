@@ -3,11 +3,11 @@
 All notable changes of releases are documented in this file
 using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
-## [Unreleased]
+## [1.2.0]
 
 ### Added
 
-- Add PHP 8.5
+- Add PHP 8.5 support
 
 ### Changed
 
