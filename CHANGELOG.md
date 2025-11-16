@@ -16,6 +16,7 @@ using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 ### Fixed
 
 - It was possible to start the image with an unsupported Node version which led to problems. The container will now crash during startup to give you immediate feedback.
+- Typo: Replaced legacy variant name 'flex' with 'web'
 
 ## [1.1.0]
 

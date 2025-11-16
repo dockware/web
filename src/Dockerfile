@@ -2,7 +2,7 @@
 # Copyright 2025 dasistweb GmbH
 #
 FROM ubuntu:24.04
-LABEL title="Dockware flex:latest" \
+LABEL title="Dockware web:latest" \
       version=${IMAGE_VERSION} \
       maintainer="dasistweb GmbH"
 
