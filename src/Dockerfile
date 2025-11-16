@@ -245,3 +245,5 @@ WORKDIR /var/www/html
 ## ***********************************************************************
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+
+HEALTHCHECK --interval=5s --timeout=3s --retries=10 CMD [ "sh", "-c", "test -f /var/www/container.launched" ]

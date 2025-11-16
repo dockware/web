@@ -90,15 +90,19 @@ file_exists:
     expected: 1
 
   - name: "Version Meta file exists"
-    file: " /dockware/version.txt"
+    file: "/dockware/version.txt"
     expected: 1
 
   - name: "Copyright Meta file exists"
-    file: " /dockware/copyright.txt"
+    file: "/dockware/copyright.txt"
     expected: 1
 
   - name: "Build Date Meta file exists"
-    file: " /dockware/build-date.txt"
+    file: "/dockware/build-date.txt"
+    expected: 1
+
+  - name: "Healthcheck file exists"
+    file: "/var/www/container.launched"
     expected: 1
 
 file_content:

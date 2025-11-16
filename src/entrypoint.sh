@@ -193,6 +193,12 @@ fi
 # otherwise it will continue with the code below
 exec "$@"
 
+
+# now create the final file to tell our health checks
+# that the container is ready to use
+touch /var/www/container.launched
+
+
 # we still need this to allow custom events
 # such as our BUILD_PLUGIN feature to exit the container
 if [[ ! -z "$DOCKWARE_CI" ]]; then
