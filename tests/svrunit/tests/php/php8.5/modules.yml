@@ -19,3 +19,5 @@ php_module:
     module: "mysql"
   - name: "PHP Module: bcmath"
     module: "bcmath"
+  - name: "PHP Module: APCU"
+    module: "apcu"
