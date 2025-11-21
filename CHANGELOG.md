@@ -3,12 +3,17 @@
 All notable changes of releases are documented in this file
 using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
-## [Unreleased]
+## [1.3.0]
 
 ### Added
 
-- Added a built-in healthcheck. You can now use "docker compose up --wait" to wait until the container is fully ready. (@thx for that brilliant idea @BlackScorp)
- 
+- Add official PHP 8.5 release
+- Add a built-in healthcheck. You can now use "docker compose up --wait" to wait until the container is fully ready. (@thx for that brilliant idea @BlackScorp)
+
+### Fixed
+
+- Typo: Replaced legacy variant name 'flex' with 'web' (thx @marcoschumacher)
+
 ## [1.2.0]
 
 ### Added
@@ -22,7 +27,6 @@ using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 ### Fixed
 
 - It was possible to start the image with an unsupported Node version which led to problems. The container will now crash during startup to give you immediate feedback.
-- Typo: Replaced legacy variant name 'flex' with 'web'
 
 ## [1.1.0]
 
