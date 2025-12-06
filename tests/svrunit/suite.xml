@@ -57,11 +57,11 @@
 
         <!-- PHP -->
 
-        <testsuite name="PHP 8.5, XDebug OFF" group="php" dockerImage="dockware/web:{{tag}}" dockerEnv="PHP_VERSION=8.5,XDEBUG_ENABLED=0">
+        <testsuite name="PHP 8.5, XDebug ON" group="php" dockerImage="dockware/web:{{tag}}" dockerEnv="PHP_VERSION=8.5,XDEBUG_ENABLED=1">
             <directory>./tests/php/php8.5</directory>
             <directory>./tests/tools/composer/v2</directory>
             <directory>./tests/tools/tideways/config</directory>
-            <directory>./tests/features/xdebug-off</directory>
+            <directory>./tests/features/xdebug-on</directory>
         </testsuite>
 
         <testsuite name="PHP 8.4, XDebug ON" group="php" dockerImage="dockware/web:{{tag}}" dockerEnv="PHP_VERSION=8.4,XDEBUG_ENABLED=1">
