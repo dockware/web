@@ -15,4 +15,8 @@ apt-get install -y php8.5-fpm \
                    php8.5-soap \
                    php8.5-apcu \
                    php8.5-xdebug \
-                   php8.5-bcmath
+                   php8.5-bcmath \
+                   php8.5-redis \
+                   php8.5-amqp \
+                   php8.5-pcov \
+                   php8.5-zstd
