@@ -26,6 +26,9 @@ ENV XDEBUG_ENABLED 0
 ENV FILEBEAT_ENABLED 0
 ENV SUPERVISOR_ENABLED 0
 ENV TIDEWAYS_KEY not-set
+ENV TIDEWAYS_ENVIRONMENT production
+ENV TIDEWAYS_SERVICE app
+ENV TIDEWAYS_SERVICE_CLI cli
 ENV BASH_ENV /var/www/.bashrc
 
 # these are all our files that we need to setup the image
@@ -65,7 +68,10 @@ RUN echo "id:env-variables" && \
     && echo "export PHP_IDE_CONFIG=${PHP_IDE_CONFIG}" >> /etc/profile \
     && echo "export FILEBEAT_ENABLED=${FILEBEAT_ENABLED}" >> /etc/profile \
     && echo "export SUPERVISOR_ENABLED=${SUPERVISOR_ENABLED}" >> /etc/profile \
-    && echo "export TIDEWAYS_KEY=${TIDEWAYS_KEY}" >> /etc/profile
+    && echo "export TIDEWAYS_KEY=${TIDEWAYS_KEY}" >> /etc/profile \
+    && echo "export TIDEWAYS_ENVIRONMENT=${TIDEWAYS_ENVIRONMENT}" >> /etc/profile \
+    && echo "export TIDEWAYS_SERVICE=${TIDEWAYS_SERVICE}" >> /etc/profile \
+    && echo "export TIDEWAYS_SERVICE_CLI=${TIDEWAYS_SERVICE_CLI}" >> /etc/profile
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ##  BASE REQUIREMENTS
