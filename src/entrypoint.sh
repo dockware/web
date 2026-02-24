@@ -105,6 +105,12 @@ if [ $RECOVERY_MODE = 0 ]; then
         echo "DOCKWARE: activating Tideways...."
         sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_API_KEY__/'${TIDEWAYS_KEY}'/g' /etc/php/${CURRENT_PHP_VERSION}/fpm/conf.d/20-tideways.ini
         sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_API_KEY__/'${TIDEWAYS_KEY}'/g' /etc/php/${CURRENT_PHP_VERSION}/cli/conf.d/20-tideways.ini
+
+        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_ENVIRONMENT__/'${TIDEWAYS_ENVIRONMENT}'/g' /etc/php/${CURRENT_PHP_VERSION}/fpm/conf.d/20-tideways.ini
+        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_ENVIRONMENT__/'${TIDEWAYS_ENVIRONMENT}'/g' /etc/php/${CURRENT_PHP_VERSION}/cli/conf.d/20-tideways.ini
+        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_SERVICE__/'${TIDEWAYS_SERVICE}'/g' /etc/php/${CURRENT_PHP_VERSION}/fpm/conf.d/20-tideways.ini
+        sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_SERVICE__/'${TIDEWAYS_SERVICE_CLI}'/g' /etc/php/${CURRENT_PHP_VERSION}/cli/conf.d/20-tideways.ini
+
         nohup sudo tideways-daemon --log=/var/log/tideways/daemon.log > /dev/null 2>&1 &
         ps aux | grep tideways-daemon
         echo "-----------------------------------------------------------"

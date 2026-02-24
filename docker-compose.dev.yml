@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  web:
+    image: dockware/web:dev
+    container_name: dockware-tideways-test
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - TIDEWAYS_KEY=test-api-key
