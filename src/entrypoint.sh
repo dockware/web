@@ -111,7 +111,7 @@ if [ $RECOVERY_MODE = 0 ]; then
         sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_SERVICE__/'${TIDEWAYS_SERVICE}'/g' /etc/php/${CURRENT_PHP_VERSION}/fpm/conf.d/20-tideways.ini
         sudo sed -i 's/__DOCKWARE_VAR_TIDEWAYS_SERVICE__/'${TIDEWAYS_SERVICE_CLI}'/g' /etc/php/${CURRENT_PHP_VERSION}/cli/conf.d/20-tideways.ini
 
-        nohup sudo tideways-daemon --log=/var/log/tideways/daemon.log > /dev/null 2>&1 &
+        nohup sudo -E tideways-daemon --log=/var/log/tideways/daemon.log > /dev/null 2>&1 &
         ps aux | grep tideways-daemon
         echo "-----------------------------------------------------------"
     else
