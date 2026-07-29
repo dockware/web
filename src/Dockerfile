@@ -2,33 +2,35 @@
 # Copyright 2025 dasistweb GmbH
 #
 FROM ubuntu:24.04
+
+# must be declared before it is referenced in the LABEL below,
+# otherwise the version label is built empty
+ARG IMAGE_VERSION
+
 LABEL title="Dockware web:latest" \
       version=${IMAGE_VERSION} \
       maintainer="dasistweb GmbH"
 
-
-ARG IMAGE_VERSION
-
 ## ***********************************************************************
 ##  IMAGE VARIABLES
 ## ***********************************************************************
-ENV TZ Europe/Berlin
-ENV PHP_VERSION not-set
-ENV NODE_VERSION not-set
-ENV APACHE_DOCROOT /var/www/html/public
-ENV RECOVERY_MODE 0
-ENV SSH_USER not-set
-ENV SSH_PWD not-set
-ENV XDEBUG_REMOTE_HOST "host.docker.internal"
-ENV XDEBUG_CONFIG "idekey=PHPSTORM"
-ENV PHP_IDE_CONFIG "serverName=localhost"
-ENV XDEBUG_ENABLED 0
-ENV FILEBEAT_ENABLED 0
-ENV SUPERVISOR_ENABLED 0
-ENV TIDEWAYS_KEY not-set
-ENV TIDEWAYS_ENVIRONMENT production
-ENV TIDEWAYS_SERVICE app
-ENV BASH_ENV /var/www/.bashrc
+ENV TZ=Europe/Berlin
+ENV PHP_VERSION=not-set
+ENV NODE_VERSION=not-set
+ENV APACHE_DOCROOT=/var/www/html/public
+ENV RECOVERY_MODE=0
+ENV SSH_USER=not-set
+ENV SSH_PWD=not-set
+ENV XDEBUG_REMOTE_HOST="host.docker.internal"
+ENV XDEBUG_CONFIG="idekey=PHPSTORM"
+ENV PHP_IDE_CONFIG="serverName=localhost"
+ENV XDEBUG_ENABLED=0
+ENV FILEBEAT_ENABLED=0
+ENV SUPERVISOR_ENABLED=0
+ENV TIDEWAYS_KEY=not-set
+ENV TIDEWAYS_ENVIRONMENT=production
+ENV TIDEWAYS_SERVICE=app
+ENV BASH_ENV=/var/www/.bashrc
 
 # these are all our files that we need to setup the image
 COPY --chmod=0755 ./scripts /dockware/tmp/scripts
@@ -76,6 +78,11 @@ RUN echo "id:env-variables" && \
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 RUN echo "id:basics" && \
+    # never pull recommended (optional) packages anywhere in the build.
+    # this shrinks the image across every later apt-get install
+    # (php versions, node deps, ...) without touching their scripts
+    echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/00-no-recommends && \
+    echo 'APT::Install-Suggests "false";'   > /etc/apt/apt.conf.d/00-no-suggests && \
     apt-get update && \
     # first install tools to add repositories
     apt-get install -y wget gnupg2 sudo apt-transport-https software-properties-common && \

@@ -33,6 +33,14 @@ for entry in "${PHP_VERSIONS[@]}"; do
     cat /dockware/tmp/config/php/cli.ini >| /etc/php/$version/cli/conf.d/01-general-cli.ini
 
     # -----------------------------------------------------------
+    # PID directive
+    # the php8.5 fpm package ships php-fpm.conf without a "pid" entry. without it no pid file
+    # is written, so the SysV "service ... stop" cannot pid-match and burns a 30s QUIT-retry
+    # timeout on every stop, making "make switch-php version=8.5" take 20-30s instead of ~1s.
+    grep -qE '^\s*pid\s*=' /etc/php/$version/fpm/php-fpm.conf \
+        || sed -i "/^\[global\]/a pid = /run/php/php$version-fpm.pid" /etc/php/$version/fpm/php-fpm.conf
+
+    # -----------------------------------------------------------
     # Xdebug
     cp /dockware/tmp/config/php/xdebug-3.ini /etc/php/$version/fpm/conf.d/20-xdebug.ini
     cp /dockware/tmp/config/php/xdebug-3.ini /etc/php/$version/cli/conf.d/20-xdebug.ini

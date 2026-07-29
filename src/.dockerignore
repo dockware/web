@@ -1,0 +1,7 @@
+# keep the build context small: the Dockerfile itself and OS/editor
+# cruft are never needed inside the image
+Dockerfile
+.dockerignore
+**/.DS_Store
+**/Thumbs.db
+**/*.swp
