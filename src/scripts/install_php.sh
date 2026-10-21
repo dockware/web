@@ -26,7 +26,19 @@ for entry in "${PHP_VERSIONS[@]}"; do
 
     # -----------------------------------------------------------
     # PHP
-    sh ./php/install_php$version.sh
+    # retry the whole install (already downloaded packages stay in the apt cache),
+    # and fail the build instead of silently shipping an image without this php version
+    attempt=1
+    until sh ./php/install_php$version.sh; do
+        if [ $attempt -ge 3 ]; then
+            echo "DOCKWARE: installing PHP $version failed after $attempt attempts"
+            exit 1
+        fi
+        attempt=$((attempt + 1))
+        sleep 30
+        # apt-get update only warns when the ppa is unreachable, so refresh the lists before retrying
+        apt-get update
+    done
 
     cat /dockware/tmp/config/php/general.ini >| /etc/php/$version/fpm/conf.d/01-general.ini
     cat /dockware/tmp/config/php/general.ini >| /etc/php/$version/cli/conf.d/01-general.ini
