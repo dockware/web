@@ -83,6 +83,8 @@ RUN echo "id:basics" && \
     # (php versions, node deps, ...) without touching their scripts
     echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/00-no-recommends && \
     echo 'APT::Install-Suggests "false";'   > /etc/apt/apt.conf.d/00-no-suggests && \
+    # retry failed downloads (with backoff). the ondrej ppa often answers 503 right after releases
+    echo 'Acquire::Retries "10";'           > /etc/apt/apt.conf.d/00-retries && \
     apt-get update && \
     # first install tools to add repositories
     apt-get install -y wget gnupg2 sudo apt-transport-https software-properties-common && \

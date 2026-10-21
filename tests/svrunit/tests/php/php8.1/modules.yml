@@ -1,3 +1,8 @@
+commands:
+  - name: "php8.1-cli package is >= 8.1.34-9 (CVE-2026-109618, CVE-2026-109619, backported by ondrej/php)"
+    command: "dpkg --compare-versions $(dpkg-query -W php8.1-cli | cut -f2) ge 8.1.34-9 && echo PATCHED || echo VULNERABLE"
+    expected: "PATCHED"
+
 php_module:
   - name: "PHP Module: intl"
     module: "intl"

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3]
+
+### Security
+
+- Updated PHP to 8.2.35, 8.3.36, 8.4.27 and 8.5.12 to fix CVE-2026-109618 and CVE-2026-109619.
+- Updated PHP 7.4, 8.0 and 8.1 packages to the ondrej/php builds with backported fixes for CVE-2026-109618 and CVE-2026-109619 (7.4.33-31, 8.0.30-25, 8.1.34-9).
+- Updated Node.js to 22.23.4 and 24.22.1 to include the Node.js security release from 2026-10-20.
+
+### Changed
+
+- Builds now run without Docker cache, because cached layers kept old, vulnerable PHP and Node versions.
+
 ## [1.4.2]
 
 ### Fixed

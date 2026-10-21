@@ -48,7 +48,7 @@ build: ##3 Builds the image
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
-	@cd ./src && DOCKER_BUILDKIT=1 docker build --build-arg IMAGE_VERSION=$(version) -t dockware/web:$(version) .
+	@cd ./src && DOCKER_BUILDKIT=1 docker build --no-cache --build-arg IMAGE_VERSION=$(version) -t dockware/web:$(version) .
 
 analyze: ##3 Shows the size of the image
 ifndef version

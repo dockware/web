@@ -1,3 +1,8 @@
+commands:
+  - name: "php7.4-cli package is >= 1:7.4.33-31 (CVE-2026-109618, CVE-2026-109619, backported by ondrej/php)"
+    command: "dpkg --compare-versions $(dpkg-query -W php7.4-cli | cut -f2) ge 1:7.4.33-31 && echo PATCHED || echo VULNERABLE"
+    expected: "PATCHED"
+
 php_module:
   - name: "PHP Module: intl"
     module: "intl"
