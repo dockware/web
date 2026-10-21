@@ -2,7 +2,6 @@
 .DEFAULT_GOAL := help
 
 
-
 help:
 	@echo "PROJECT COMMANDS"
 	@echo "--------------------------------------------------------------------------------------------"
@@ -36,6 +35,7 @@ all: ##2 Helper that builds, tests and analyzes the image
 ifndef version
 	$(error Please provide the argument version=xyz to run the command)
 endif
+	make preflight
 	make build version=$(version)
 	make svrunit version=$(version)
 	make cypress version=$(version)
@@ -63,7 +63,18 @@ endif
 	rm -rf web.tar
 	rm -rf web.tar.gz | true
 
+multi-push: ##3 Builds, tests and analyzes the image, then pushes it for amd64 and arm64
+ifndef version
+	$(error Please provide the argument version=xyz to run the command)
+endif
+	make preflight
+	make all version=$(version)
+	@cd ./src && docker buildx build --no-cache --platform linux/amd64,linux/arm64 --pull --build-arg IMAGE_VERSION=$(version) -t dockware/web:$(version) --push .
+
 # ----------------------------------------------------------------------------------------------------------------
+
+preflight: ##3 Checks that the PHP PPA has the same packages for amd64 and arm64
+	@python3 ./tests/scripts/ppa_preflight.py
 
 svrunit: ##4 Runs all SVRUnit tests
 ifndef version
