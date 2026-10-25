@@ -27,7 +27,7 @@ That's it, connect into the container and start coding.
 
 If you need a more complex setup, you can use a `docker-compose.yml` file.
 This sample even mounts your local **src** folder to the Apache DocRoot and also switches
-to PHP 8.4 and Node 22.
+to PHP 8.4 and Node 24.
 
 ```yaml
   website:

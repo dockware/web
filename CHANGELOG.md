@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Added Node.js 26 and removed Node.js 22. Supported versions are now 26 and 24, default stays 24.
+
 ## [1.4.3]
 
 ### Security

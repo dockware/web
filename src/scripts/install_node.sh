@@ -2,7 +2,7 @@
 
 # we always support the 2 latest LTS versions
 # https://nodejs.org/en/about/previous-releases
-NODE_VERSIONS=("24" "22")
+NODE_VERSIONS=("26" "24")
 
 DEFAULT_NODE_VERSION=24
 

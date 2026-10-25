@@ -47,12 +47,12 @@
 
         <!-- NODE -->
 
-        <testsuite name="ENV - Node Version Switch to 24" group="node" dockerImage="dockware/web:{{tag}}" dockerEnv="NODE_VERSION=24">
+        <testsuite name="ENV - Switch to Node 24" group="node" dockerImage="dockware/web:{{tag}}" dockerEnv="NODE_VERSION=24">
             <directory>./tests/node/v24</directory>
         </testsuite>
 
-        <testsuite name="ENV - Node Version Switch to 22" group="node" dockerImage="dockware/web:{{tag}}" dockerEnv="NODE_VERSION=22">
-            <directory>./tests/node/v22</directory>
+        <testsuite name="ENV - Switch to Noe 26" group="node" dockerImage="dockware/web:{{tag}}" dockerEnv="NODE_VERSION=26">
+            <directory>./tests/node/v26</directory>
         </testsuite>
 
         <!-- PHP -->
