@@ -51,7 +51,7 @@
             <directory>./tests/node/v24</directory>
         </testsuite>
 
-        <testsuite name="ENV - Switch to Noe 26" group="node" dockerImage="dockware/web:{{tag}}" dockerEnv="NODE_VERSION=26">
+        <testsuite name="ENV - Switch to Node 26" group="node" dockerImage="dockware/web:{{tag}}" dockerEnv="NODE_VERSION=26">
             <directory>./tests/node/v26</directory>
         </testsuite>
 

@@ -109,6 +109,8 @@ RUN echo "id:basics" && \
             openssh-server openssl sshpass \
             cron \
             jq \
+            # node 26+ binaries link against libatomic
+            libatomic1 \
             gpg-agent \
             rsync \
             supervisor \
