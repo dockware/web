@@ -1,7 +1,7 @@
 commands:
   - name: "NVM is installed and loaded"
     command: "nvm --version"
-    expected: "0.40.1"
+    expected: "0.40.8"
   - name: "NVM can switch Node version"
     command: "nvm use default"
     expected: "Now using node v"
