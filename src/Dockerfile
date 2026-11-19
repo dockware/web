@@ -83,12 +83,16 @@ RUN echo "id:basics" && \
     # (php versions, node deps, ...) without touching their scripts
     echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/00-no-recommends && \
     echo 'APT::Install-Suggests "false";'   > /etc/apt/apt.conf.d/00-no-suggests && \
-    # retry failed downloads (with backoff). the ondrej ppa often answers 503 right after releases
+    # retry failed downloads (with backoff). the php repository often answers 503 right after releases
     echo 'Acquire::Retries "10";'           > /etc/apt/apt.conf.d/00-retries && \
     apt-get update && \
     # first install tools to add repositories
     apt-get install -y wget gnupg2 sudo apt-transport-https software-properties-common && \
-    LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php && \
+    # PHP comes from packages.sury.org (Ondrej Sury). The Launchpad ppa:ondrej/php is being merged into it
+    # and gets no new PHP versions for noble anymore (first seen with the PHP release from 2026-11-19).
+    wget -qO /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    echo "deb [signed-by=/usr/share/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ $(. /etc/os-release && echo $VERSION_CODENAME) main" > /etc/apt/sources.list.d/php.list && \
     wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
     echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list && \
     sudo echo 'deb [signed-by=/usr/share/keyrings/tideways.gpg] https://packages.tideways.com/apt-packages-main any-version main' | sudo tee /etc/apt/sources.list.d/tideways.list && \
