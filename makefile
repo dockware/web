@@ -18,6 +18,7 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?##4 .*$$' $(firstword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?##4 "}; {printf "\033[32m  - %-30s\033[0m %s\n", $$1, $$2}'
 
 # ----------------------------------------------------------------------------------------------------------------
+#// Install 
 
 install: ##1 Installs all dependencies
 	composer install
@@ -30,6 +31,7 @@ clear: ##1 Clears all dependencies and dangling images
 	docker volume ls -q -f 'dangling=true' | xargs docker volume rm
 
 # ----------------------------------------------------------------------------------------------------------------
+#// Build 
 
 all: ##2 Helper that builds, tests and analyzes the image
 ifndef version
@@ -72,6 +74,14 @@ endif
 	@cd ./src && docker buildx build --no-cache --platform linux/amd64,linux/arm64 --pull --build-arg IMAGE_VERSION=$(version) -t dockware/web:$(version) --push .
 
 # ----------------------------------------------------------------------------------------------------------------
+
+release: ##3 Approves a version for release, commit and push .release to start the latest build
+ifndef version
+	$(error Please provide the argument version=xyz to run the command)
+endif
+	@echo "$(version)" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$$' || (echo "version must be x.y.z" && false)
+	@echo "$(version)" > .release
+	@echo "Approved $(version). Commit and push .release to main to start the release."
 
 preflight: ##3 Checks that the PHP PPA has the same packages for amd64 and arm64
 	@python3 ./tests/scripts/ppa_preflight.py

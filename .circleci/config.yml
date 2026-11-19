@@ -171,6 +171,15 @@ commands:
         type: string
     steps:
       # ------------------------------------------------------------------------------------
+      # only versions approved with "make release" are built (.release), dev-main is the nightly build
+      - run:
+          name: Check Release Approval
+          command: |
+            if [ "<< parameters.imageTag >>" != "dev-main" ] && [ "$(cat .release 2>/dev/null)" != "<< parameters.imageTag >>" ]; then
+              echo "Version << parameters.imageTag >> is not approved. Approved: $(cat .release 2>/dev/null || echo none). Run 'make release version=<< parameters.imageTag >>' first."
+              exit 1
+            fi
+      # ------------------------------------------------------------------------------------
       - run:
           name: Build Image web:<< parameters.imageTag >>
           command: |

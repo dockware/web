@@ -1,0 +1,53 @@
+name: Release Latest
+run-name: Release approved version as latest
+
+# releases the version approved with "make release version=x.y.z" (.release) as latest.
+# runs every 2 hours and when .release is pushed to main. If the version already exists on Docker Hub,
+# nothing happens. CircleCI itself always pushes, so overwrite an existing version with release.yml.
+# CircleCI only builds the version if it matches .release.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */2 * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - .release
+
+jobs:
+
+  on-push:
+    name: Release Image
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Clone Code
+        uses: actions/checkout@v4
+
+      - name: Check Docker Hub
+        id: release
+        run: |
+          VERSION=$(cat .release)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://hub.docker.com/v2/repositories/dockware/web/tags/${VERSION}")
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          if [ "$STATUS" = "200" ]; then
+            echo "dockware/web:${VERSION} already exists, skipping"
+            echo "build=false" >> $GITHUB_OUTPUT
+          elif [ "$STATUS" = "404" ]; then
+            echo "dockware/web:${VERSION} does not exist yet, starting release"
+            echo "build=true" >> $GITHUB_OUTPUT
+          else
+            echo "Docker Hub answered ${STATUS}, can't tell if dockware/web:${VERSION} exists"
+            exit 1
+          fi
+
+      - name: Release Version ${{ steps.release.outputs.version }}
+        if: steps.release.outputs.build == 'true'
+        uses: ./.github/actions/circleci
+        with:
+          VERSION: ${{ steps.release.outputs.version }}
+          SET_LATEST: true
+          # -------------------------------------------
+          CIRCLECI_KEY: ${{ secrets.CIRCLE_CI_TOKEN }}
