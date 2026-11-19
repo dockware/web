@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-- Updated PHP to 8.2.36, 8.3.37, 8.4.28 and 8.5.13 to include the PHP security release from 2026-11-19.
+- Updated PHP to 7.4.33, 8.0.30, 8.1.34, 8.2.36, 8.3.37, 8.4.28 and 8.5.13, including the security fixes released on 2026-11-19.
 
 ## [1.5.1]
 
