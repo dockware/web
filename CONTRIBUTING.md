@@ -80,7 +80,8 @@ For PHP-related changes that are not tied to the PHP installation itself, includ
 
 The **PHP Watcher** workflow (`.github/workflows/php-watcher.yml`) checks the ondrej/php PPA every hour.
 When one of the PHP versions in `install_php.sh` got a new release (e.g. 8.4.27 -> 8.4.28) and the PPA
-is in sync for amd64 and arm64, it bumps the patch version, adds a `CHANGELOG.md` entry, commits it to `main`
+is in sync for amd64 and arm64, it bumps the patch version, adds a `CHANGELOG.md` entry, raises the minimum
+PHP versions in the SVRUnit tests (so the build fails if the image does not contain the new PHP), commits it to `main`
 and starts the CircleCI release with `setLatest=true`.
 
 The versions of the last release are stored in `.github/php-versions.json`. Package-only rebuilds
