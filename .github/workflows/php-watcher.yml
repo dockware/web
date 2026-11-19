@@ -1,7 +1,7 @@
 name: PHP Watcher
 run-name: Check ondrej/php for new PHP versions
 
-# Checks every hour whether the ondrej/php PPA published a new PHP release for one of
+# Checks every hour whether the ondrej/php PPA published a new PHP package (new PHP release or backported fix) for one of
 # the PHP versions in src/scripts/install_php.sh. If so, it bumps the image version,
 # adds a CHANGELOG.md entry, commits it to main and starts the CircleCI release
 # (same as release.yml, with setLatest=true).
@@ -9,11 +9,6 @@ run-name: Check ondrej/php for new PHP versions
 
 on:
   workflow_dispatch:
-    inputs:
-      includeRevisions:
-        description: 'Also release on package-only rebuilds (e.g. 7.4.33-31 -> 7.4.33-32)'
-        type: boolean
-        default: false
   schedule:
     - cron: "17 * * * *"
 
@@ -42,7 +37,7 @@ jobs:
       - name: Check ondrej/php PPA
         id: watch
         run: |
-          python3 tests/scripts/php_watch.py ${{ github.event.inputs.includeRevisions == 'true' && '--include-revisions' || '' }}
+          python3 tests/scripts/php_watch.py
 
       - name: Commit Release
         if: steps.watch.outputs.release == 'true' || steps.watch.outputs.bootstrap == 'true'

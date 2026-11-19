@@ -3,7 +3,9 @@
 #
 # Compares the php-fpm versions the ondrej/php PPA currently publishes with the
 # versions of our last release (.github/php-versions.json). When a PHP version
-# got a new upstream release (e.g. 8.4.27 -> 8.4.28) it
+# got a new package version it
+#   (a new PHP release like 8.4.27 -> 8.4.28, or a new ondrej/php package revision like
+#   7.4.33-31 -> 7.4.33-32, which is how security fixes are backported to EOL versions 7.4, 8.0, 8.1)
 #   - bumps the patch version from the newest CHANGELOG.md entry (1.5.1 -> 1.5.2),
 #   - adds a changelog entry for the new release,
 #   - raises the PHP versions in the existing SVRUnit tests (tests/svrunit/**/*.yml),
@@ -16,9 +18,6 @@
 # ppa_preflight.py), the next run tries again.
 #
 # Options:
-#   --include-revisions  also release on package-only rebuilds (8.4.27-1 -> 8.4.27-2).
-#                        Needed for EOL versions (7.4, 8.0, 8.1), where ondrej only
-#                        ships backported fixes as new package revisions.
 #   --dry-run            only print what would happen, change no files.
 import argparse
 import glob
@@ -76,7 +75,6 @@ def output(**values):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--include-revisions", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -118,7 +116,8 @@ def main():
             # a php version that was just added to install_php.sh comes with its own release
             print(f"PHP {v}: new in {INSTALL_SCRIPT}, recording {new}")
             continue
-        changed = upstream(old) != upstream(new) if not args.include_revisions else old != new
+        # every new package version counts, revisions included: they carry the backported security fixes
+        changed = old != new
         print(f"PHP {v}: released {old}, published {new}" + ("  -> NEW" if changed else ""))
         if changed:
             changes.append((v, old, new))
@@ -217,7 +216,7 @@ def write_changelog(version, changes):
         if upstream(old) != upstream(new):
             lines.append(f"- Updated PHP {v} from {upstream(old)} to {upstream(new)}.")
         else:
-            lines.append(f"- Updated PHP {v} package from {old} to {new} (ondrej/php rebuild).")
+            lines.append(f"- Updated PHP {v} package from {old} to {new} (ondrej/php package update, backported fixes).")
     entry = f"## [{version}]\n\n### Security\n\n" + "\n".join(lines) + "\n\n"
 
     with open(CHANGELOG) as f:
