@@ -1,4 +1,4 @@
-name: Release Latest
+name: Auto Release Scheduler
 run-name: Release approved version as latest
 
 # releases the version approved with "make release version=x.y.z" (.release) as latest.
