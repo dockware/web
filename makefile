@@ -83,7 +83,7 @@ endif
 	@echo "$(version)" > .release
 	@echo "Approved $(version). Commit and push .release to main to start the release."
 
-preflight: ##3 Checks that the PHP PPA has the same packages for amd64 and arm64
+preflight: ##3 Checks that packages.sury.org has the same PHP packages for amd64 and arm64
 	@python3 ./tests/scripts/ppa_preflight.py
 
 svrunit: ##4 Runs all SVRUnit tests
