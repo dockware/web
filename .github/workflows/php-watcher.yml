@@ -1,11 +1,49 @@
 name: PHP Watcher
 run-name: Check ondrej/php for new PHP versions
 
-# Checks every hour whether the ondrej/php PPA published a new PHP package (new PHP release or backported fix) for one of
-# the PHP versions in src/scripts/install_php.sh. If so, it bumps the image version,
-# adds a CHANGELOG.md entry, commits it to main and starts the CircleCI release
-# (same as release.yml, with setLatest=true).
-# Logic: tests/scripts/php_watch.py, state: .github/php-versions.json
+# =====================================================================================================
+# PHP WATCHER
+# =====================================================================================================
+#
+# WHY
+#   dockware/web ships PHP 7.4 - 8.5 from the ondrej/php PPA. When a PHP security fix comes out,
+#   our images stay vulnerable until somebody builds and releases a new version by hand.
+#   This workflow does that automatically, at most one hour after the fix is available for all architectures.
+#
+# WHAT (every hour at :17, or manually via "Run workflow")
+#   1. tests/scripts/php_watch.py compares the php-fpm package versions the PPA publishes with
+#      the versions of our last release (.github/php-versions.json).
+#      A change is either a new PHP release (8.4.27 -> 8.4.28) or a new package revision
+#      (7.4.33-31 -> 7.4.33-32). Revisions matter: that is how ondrej backports security fixes
+#      to the EOL versions 7.4, 8.0 and 8.1, so both trigger a release.
+#   2. if something changed, the script
+#        - takes the highest version of CHANGELOG.md and Docker Hub and bumps the patch (1.5.1 -> 1.5.2).
+#          Docker Hub is included, so a version that was released without a changelog entry is never reused,
+#        - adds a CHANGELOG.md entry,
+#        - raises the PHP versions in the existing SVRUnit tests (tests/svrunit/tests/php/phpX.Y/modules.yml)
+#          to the new package version,
+#        - updates .github/php-versions.json.
+#   3. this workflow commits these files to main.
+#   4. it starts the CircleCI release (same as release.yml) with setLatest=true.
+#      CircleCI builds amd64 + arm64, runs SVRUnit and only then pushes to Docker Hub.
+#
+# SAFETY
+#   - outdated mirror: apt mirrors can still deliver the old PHP package for a while. Because the SVRUnit
+#     tests were raised in step 2, such a build fails in CircleCI and nothing is pushed.
+#   - amd64/arm64 out of sync: Launchpad sometimes builds arm64 hours after amd64. As long as the
+#     versions differ, nothing happens (same rule as ppa_preflight.py), the next run tries again.
+#   - Launchpad or Docker Hub not reachable: the run is skipped with a warning, the next run tries again.
+#   - concurrency: two watcher runs never run at the same time, so a version is never released twice.
+#   - a failed CircleCI build is NOT retried automatically. Version and changelog are already on main,
+#     so start release.yml with the same version again once the cause is fixed.
+#
+# SETUP
+#   - secret CIRCLE_CI_TOKEN (already used by release.yml)
+#   - write access to main: either "Read and write permissions" for workflows, or, if main is protected,
+#     a token with push rights in the secret PHP_WATCHER_TOKEN.
+#
+# Local check without changing anything: python3 tests/scripts/php_watch.py --dry-run
+# =====================================================================================================
 
 on:
   workflow_dispatch:
@@ -34,11 +72,15 @@ jobs:
           # if main is protected, use a token that may push to it (e.g. a PAT in this secret)
           token: ${{ secrets.PHP_WATCHER_TOKEN || github.token }}
 
+      # compares the PPA with .github/php-versions.json and prepares the release files.
+      # outputs: release=true + version=x.y.z, or bootstrap=true if php-versions.json did not exist yet
       - name: Check ondrej/php PPA
         id: watch
         run: |
           python3 tests/scripts/php_watch.py
 
+      # version, changelog, SVRUnit tests and php-versions.json go to main BEFORE the build starts,
+      # because CircleCI builds main and has to run the raised SVRUnit tests
       - name: Commit Release
         if: steps.watch.outputs.release == 'true' || steps.watch.outputs.bootstrap == 'true'
         run: |
@@ -52,6 +94,7 @@ jobs:
           fi
           git push origin HEAD:main
 
+      # same as release.yml: CircleCI builds amd64 + arm64, runs SVRUnit and pushes the new version as "latest"
       - name: Release Version ${{ steps.watch.outputs.version }}
         if: steps.watch.outputs.release == 'true'
         uses: ./.github/actions/circleci
