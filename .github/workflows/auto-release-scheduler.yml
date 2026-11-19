@@ -9,7 +9,8 @@ run-name: Release approved version as latest
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */2 * * *"
+    # not at minute 0: GitHub delays or drops scheduled runs at the start of the hour (high load)
+    - cron: "23 */2 * * *"
   push:
     branches:
       - main
