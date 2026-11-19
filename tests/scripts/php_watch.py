@@ -23,6 +23,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.request
 
 SERIES = "noble"  # ubuntu:24.04 in src/Dockerfile
@@ -40,7 +41,16 @@ def upstream(package_version):
 
 
 def fetch(v):
-    entries = json.load(urllib.request.urlopen(API.format(v=v), timeout=30))["entries"]
+    # launchpad sometimes takes a long time to answer, retry before giving up
+    for attempt in range(1, 4):
+        try:
+            entries = json.load(urllib.request.urlopen(API.format(v=v), timeout=60))["entries"]
+            break
+        except OSError as e:
+            print(f"PHP {v}: launchpad request failed (attempt {attempt}/3): {e}")
+            if attempt == 3:
+                raise
+            time.sleep(10 * attempt)
     found = {}
     for e in entries:
         series, arch = e["distro_arch_series_link"].split("/")[-2:]
@@ -70,7 +80,13 @@ def main():
 
     current = {}
     for v in versions:
-        found = fetch(v)
+        try:
+            found = fetch(v)
+        except OSError as e:
+            # launchpad down: no release, the next run tries again
+            print(f"::warning::launchpad not reachable, skipping this run: {e}")
+            output(release="false")
+            return
         missing = [a for a in ARCHS if a not in found]
         if missing or len(set(found.values())) > 1:
             print(f"PHP {v}: PPA NOT IN SYNC {found} missing={missing}, waiting for the next run")
