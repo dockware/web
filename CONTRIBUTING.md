@@ -76,6 +76,21 @@ If you need to make changes that affect all PHP versions:
 
 For PHP-related changes that are not tied to the PHP installation itself, include them in the PHP **run layer** within the **Dockerfile**.
 
+#### Automatic PHP releases
+
+The **PHP Watcher** workflow (`.github/workflows/php-watcher.yml`) checks the ondrej/php PPA every hour.
+When one of the PHP versions in `install_php.sh` got a new release (e.g. 8.4.27 -> 8.4.28) and the PPA
+is in sync for amd64 and arm64, it bumps the patch version, adds a `CHANGELOG.md` entry, commits it to `main`
+and starts the CircleCI release with `setLatest=true`.
+
+The versions of the last release are stored in `.github/php-versions.json`. Package-only rebuilds
+(e.g. 7.4.33-31 -> 7.4.33-32) are ignored, run the workflow manually with "includeRevisions" to release them.
+To check locally what the watcher would do:
+
+```bash
+python3 tests/scripts/php_watch.py --dry-run
+```
+
 ### Modifying Node
 
 All Node.js installation scripts and configurations are located in **`./src/scripts/install_node.sh`**.
