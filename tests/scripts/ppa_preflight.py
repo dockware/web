@@ -1,29 +1,28 @@
 #!/usr/bin/env python3
-# Checks that packages.sury.org has published the same php-fpm build for every
-# architecture we push. Sury builds arm64 hours after amd64 at times, and a
+# Checks that the ondrej/php PPA has published the same php-fpm build for every
+# architecture we push. Launchpad builds arm64 hours after amd64 at times, and a
 # multi-arch build in that window ends up with mismatching or broken packages.
-import gzip
+import json
 import re
 import sys
 import urllib.request
 
 SERIES = "noble"  # ubuntu:24.04 in src/Dockerfile
 ARCHS = ["amd64", "arm64"]
-PACKAGES = "https://packages.sury.org/php/dists/{series}/main/binary-{arch}/Packages.gz"
+API = "https://api.launchpad.net/1.0/~ondrej/+archive/ubuntu/php?ws.op=getPublishedBinaries&binary_name=php{v}-fpm&exact_match=true&status=Published"
 
 # single source of truth: the active (not commented) entries in install_php.sh
 with open("src/scripts/install_php.sh") as f:
     versions = re.findall(r'^\s*"(\d+\.\d+):\d+"', f.read(), re.M)
 
-# package name -> version, per architecture
-published = {}
-for arch in ARCHS:
-    index = gzip.decompress(urllib.request.urlopen(PACKAGES.format(series=SERIES, arch=arch), timeout=60).read()).decode()
-    published[arch] = dict(re.findall(r"^Package: (\S+)\n(?:.+\n)*?Version: (\S+)", index, re.M))
-
 failed = False
 for v in versions:
-    found = {a: published[a][f"php{v}-fpm"] for a in ARCHS if f"php{v}-fpm" in published[a]}
+    entries = json.load(urllib.request.urlopen(API.format(v=v), timeout=30))["entries"]
+    found = {}
+    for e in entries:
+        series, arch = e["distro_arch_series_link"].split("/")[-2:]
+        if series == SERIES and arch in ARCHS:
+            found[arch] = e["binary_package_version"]
 
     missing = [a for a in ARCHS if a not in found]
     if missing or len(set(found.values())) > 1:
@@ -33,5 +32,5 @@ for v in versions:
         print(f"PHP {v}: ok {found[ARCHS[0]]}")
 
 if failed:
-    print("packages.sury.org not in sync for all architectures, try again later.")
+    print("PPA not in sync for all architectures, try again later.")
     sys.exit(1)

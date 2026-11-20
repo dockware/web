@@ -36,7 +36,7 @@ for entry in "${PHP_VERSIONS[@]}"; do
         fi
         attempt=$((attempt + 1))
         sleep 30
-        # apt-get update only warns when the php repository is unreachable, so refresh the lists before retrying
+        # apt-get update only warns when the ppa is unreachable, so refresh the lists before retrying
         apt-get update
     done
 
