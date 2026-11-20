@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgraded the base image to Ubuntu 26.04. PHP packages now come from packages.sury.org, because the ondrej/php PPA has no builds for 26.04.
 
+### Removed
+
+- Removed PHP 7.4, 8.0, 8.1 and 8.2. The image now ships PHP 8.3 to 8.6.
+
 ## [1.5.2]
 
 ### Security
