@@ -19,6 +19,26 @@ commands:
     command: "vim --v"
     expected: "VIM - Vi IMproved"
 
+  - name: "VIM is vim-tiny (smaller image)"
+    command: "readlink -f $(which vim)"
+    expected: "/usr/bin/vim.tiny"
+
+  - name: "VI is available"
+    command: "readlink -f $(which vi)"
+    expected: "/usr/bin/vim.tiny"
+
+  - name: "Full VIM package is not installed"
+    command: "echo SVRUNIT: $(dpkg-query -W -f='${Status}' vim 2>/dev/null)"
+    not_expected: "install ok installed"
+
+  - name: "NVM download cache is empty"
+    command: "echo SVRUNIT: $(find /var/www/.nvm/.cache -type f | wc -l) files"
+    expected: "SVRUNIT: 0 files"
+
+  - name: "Node.js header files are not shipped"
+    command: "echo SVRUNIT: $(ls -d /var/www/.nvm/versions/node/*/include 2>/dev/null | wc -l) include dirs"
+    expected: "SVRUNIT: 0 include dirs"
+
   - name: "YARN Dependency Manager exists"
     command: "echo SVRUNIT: $(yarn -v)"
     expected: "SVRUNIT: 1."

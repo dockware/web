@@ -103,7 +103,7 @@ RUN echo "id:basics" && \
             gosu \
             make \
             curl \
-            vim \
+            vim-tiny \
             unzip \
             bzip2 \
             zstd \
@@ -124,6 +124,8 @@ RUN echo "id:basics" && \
             tideways-php tideways-daemon \
             filebeat && \
     mkdir -p /var/run/sshd && \
+    # vim-tiny only provides "vi", keep "vim" working for users
+    ln -s /usr/bin/vim.tiny /usr/bin/vim && \
     ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && echo "${TZ}" > /etc/timezone && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

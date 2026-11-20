@@ -23,7 +23,12 @@ for version in "${NODE_VERSIONS[@]}"; do
   # we have to install yarn in additional node versions
   # otherwise it won't be found after a nvm switch
   npm install -g yarn
+  # headers are only used to compile native addons, node-gyp downloads its own copy anyway
+  rm -rf "$NVM_DIR/versions/node/$(nvm version "$version")/include"
 done
+
+# downloaded node tarballs, not needed after the install
+nvm cache clear
 
 # -----------------------------------------------------------------------------------------
 # "sudo node -v" also needs to work, so to a symlink with sudo

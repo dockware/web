@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Upgraded the base image to Ubuntu 26.04. PHP packages now come from packages.sury.org, because the ondrej/php PPA has no builds for 26.04.
+- Reduced the image size from about 2.0 GB to 1.55 GB: the nvm download cache and the Node.js header files are no longer shipped, and `vim` is now `vim-tiny` (no syntax highlighting or plugins).
 
 ### Removed
 
