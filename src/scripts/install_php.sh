@@ -2,6 +2,7 @@
 
 # a key value list of php versions and their folder names
 PHP_VERSIONS=(
+    "8.6:20261112"
     "8.5:20250925"
     "8.4:20240924"
     "8.3:20230831"
@@ -54,10 +55,14 @@ for entry in "${PHP_VERSIONS[@]}"; do
 
     # -----------------------------------------------------------
     # Xdebug
-    cp /dockware/tmp/config/php/xdebug-3.ini /etc/php/$version/fpm/conf.d/20-xdebug.ini
-    cp /dockware/tmp/config/php/xdebug-3.ini /etc/php/$version/cli/conf.d/20-xdebug.ini
-    sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /dockware/tmp/config/php/xdebug-3.ini > /etc/php/$version/fpm/conf.d/20-xdebug.ini
-    sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /dockware/tmp/config/php/xdebug-3.ini > /etc/php/$version/cli/conf.d/20-xdebug.ini
+    # skipped for new php versions that have no xdebug build yet,
+    # otherwise every php call warns about the missing xdebug.so
+    if [ -f /usr/lib/php/$phpFolderId/xdebug.so ]; then
+        cp /dockware/tmp/config/php/xdebug-3.ini /etc/php/$version/fpm/conf.d/20-xdebug.ini
+        cp /dockware/tmp/config/php/xdebug-3.ini /etc/php/$version/cli/conf.d/20-xdebug.ini
+        sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /dockware/tmp/config/php/xdebug-3.ini > /etc/php/$version/fpm/conf.d/20-xdebug.ini
+        sed "s/__PHP__FOLDER__ID/$phpFolderId/g" /dockware/tmp/config/php/xdebug-3.ini > /etc/php/$version/cli/conf.d/20-xdebug.ini
+    fi
 
     # -----------------------------------------------------------
     # Tideways

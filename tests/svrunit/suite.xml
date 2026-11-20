@@ -57,6 +57,13 @@
 
         <!-- PHP -->
 
+        <testsuite name="PHP 8.6" group="php" dockerImage="dockware/web:{{tag}}" dockerEnv="PHP_VERSION=8.6">
+            <directory>./tests/php/php8.6</directory>
+            <directory>./tests/tools/composer/v2</directory>
+            <directory>./tests/tools/tideways/config</directory>
+            <directory>./tests/features/xdebug-off</directory>
+        </testsuite>
+
         <testsuite name="PHP 8.5, XDebug ON" group="php" dockerImage="dockware/web:{{tag}}" dockerEnv="PHP_VERSION=8.5,XDEBUG_ENABLED=1">
             <directory>./tests/php/php8.5</directory>
             <directory>./tests/tools/composer/v2</directory>
