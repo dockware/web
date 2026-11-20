@@ -26,15 +26,23 @@ workflows:
             # avoid that it automatically triggers on push
             equal: [ "", << pipeline.parameters.imageName >> ]
     jobs:
+      # no build at all while packages.sury.org has not published the same PHP packages for amd64 and arm64
+      - job-preflight:
+          name: preflight
+      # ------------------------------------------------------------------------------------
       - job-build-arm64:
           name: dockware/<< pipeline.parameters.imageName >>:<< pipeline.parameters.imageTag >>-arm-64
           imageName: << pipeline.parameters.imageName >>
           imageTag: << pipeline.parameters.imageTag >>
+          requires:
+            - preflight
       # ------------------------------------------------------------------------------------
       - job-build-amd64:
           name: dockware/<< pipeline.parameters.imageName >>:<< pipeline.parameters.imageTag >>-amd-64
           imageName: << pipeline.parameters.imageName >>
           imageTag: << pipeline.parameters.imageTag >>
+          requires:
+            - preflight
       # ------------------------------------------------------------------------------------
       - job-update-manifest:
           name: update-manifest
@@ -60,6 +68,16 @@ executors:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
+
+  job-preflight:
+      executor: ubuntu-executor
+      resource_class: medium
+      steps:
+          - checkout
+          - run:
+              name: Check packages.sury.org (amd64 + arm64 in sync)
+              command: |
+                make preflight
 
   job-build-arm64:
       executor: ubuntu-executor
