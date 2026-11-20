@@ -71,6 +71,10 @@ commands:
     command: "sudo service supervisor status"
     expected: "supervisord is  not running"
 
+  - name: "apache2-bin package is >= 2.4.66-2ubuntu2.8 (CVE-2026-119618, mod_http2 RCE)"
+    command: "v=$(dpkg-query -W -f='${Version}' apache2-bin); dpkg --compare-versions $v ge 2.4.66-2ubuntu2.8 && echo $v '>=' 2.4.66-2ubuntu2.8 || echo $v '<' 2.4.66-2ubuntu2.8"
+    expected: ">= 2.4.66-2ubuntu2.8"
+
   - name: "GIT is installed"
     command: "git --version"
     expected: "git version 2."
