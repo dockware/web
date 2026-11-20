@@ -1,7 +1,7 @@
 commands:
   - name: "php7.4-cli package is >= 1:7.4.33-37 (security release 2026-11-19, backported by ondrej/php)"
-    command: "dpkg --compare-versions $(dpkg-query -W php7.4-cli | cut -f2) ge 1:7.4.33-37 && echo PATCHED || echo VULNERABLE"
-    expected: "PATCHED"
+    command: "v=$(dpkg-query -W -f='${Version}' php7.4-cli); dpkg --compare-versions $v ge 1:7.4.33-37 && echo $v '>=' 1:7.4.33-37 || echo $v '<' 1:7.4.33-37"
+    expected: ">= 1:7.4.33-37"
 
 php_module:
   - name: "PHP Module: intl"
