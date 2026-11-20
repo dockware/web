@@ -47,6 +47,8 @@ if [ $RECOVERY_MODE = 0 ]; then
     echo "DOCKWARE: setting timezone to ${TZ}..."
     sudo ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
     sudo dpkg-reconfigure -f noninteractive tzdata
+    # tzdata no longer maintains /etc/timezone since ubuntu 26.04, but tools still read it
+    echo "${TZ}" | sudo tee /etc/timezone > /dev/null
     echo "-----------------------------------------------------------"
 
     # checks if a different username is set in ENV and create if its not existing yet

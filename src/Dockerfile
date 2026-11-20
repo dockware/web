@@ -1,7 +1,7 @@
 # Official Dockware Image
 # Copyright 2025 dasistweb GmbH
 #
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 # must be declared before it is referenced in the LABEL below,
 # otherwise the version label is built empty
@@ -83,14 +83,17 @@ RUN echo "id:basics" && \
     # (php versions, node deps, ...) without touching their scripts
     echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/00-no-recommends && \
     echo 'APT::Install-Suggests "false";'   > /etc/apt/apt.conf.d/00-no-suggests && \
-    # retry failed downloads (with backoff). the ondrej ppa often answers 503 right after releases
+    # retry failed downloads (with backoff). the php repo often answers 503 right after releases
     echo 'Acquire::Retries "10";'           > /etc/apt/apt.conf.d/00-retries && \
     apt-get update && \
     # first install tools to add repositories
-    apt-get install -y wget gnupg2 sudo apt-transport-https software-properties-common && \
-    LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php && \
-    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
-    echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list && \
+    apt-get install -y ca-certificates wget gnupg2 sudo apt-transport-https && \
+    # ondrej/php ppa has no builds for resolute, sury.org is the official source there
+    wget -qO /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    echo "deb [signed-by=/usr/share/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ resolute main" > /etc/apt/sources.list.d/php.list && \
+    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor | tee /usr/share/keyrings/elastic.gpg > /dev/null && \
+    echo "deb [signed-by=/usr/share/keyrings/elastic.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list && \
     sudo echo 'deb [signed-by=/usr/share/keyrings/tideways.gpg] https://packages.tideways.com/apt-packages-main any-version main' | sudo tee /etc/apt/sources.list.d/tideways.list && \
     wget -qO - 'https://packages.tideways.com/key.gpg' | gpg --dearmor | sudo tee /usr/share/keyrings/tideways.gpg > /dev/null && \
     # update our repositories
@@ -120,7 +123,7 @@ RUN echo "id:basics" && \
             apache2 libapache2-mod-fcgid  \
             tideways-php tideways-daemon \
             filebeat && \
-    mkdir /var/run/sshd && \
+    mkdir -p /var/run/sshd && \
     ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && echo "${TZ}" > /etc/timezone && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

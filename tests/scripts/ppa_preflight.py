@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-# Checks that the ondrej/php PPA has published the same php-fpm build for every
-# architecture we push. Launchpad builds arm64 hours after amd64 at times, and a
+# Checks that the sury.org php repo has published the same php-fpm build for every
+# architecture we push. arm64 is built hours after amd64 at times, and a
 # multi-arch build in that window ends up with mismatching or broken packages.
-import json
+import gzip
 import re
 import sys
 import urllib.request
 
-SERIES = "noble"  # ubuntu:24.04 in src/Dockerfile
+SERIES = "resolute"  # ubuntu:26.04 in src/Dockerfile
 ARCHS = ["amd64", "arm64"]
-API = "https://api.launchpad.net/1.0/~ondrej/+archive/ubuntu/php?ws.op=getPublishedBinaries&binary_name=php{v}-fpm&exact_match=true&status=Published"
+INDEX = "https://packages.sury.org/php/dists/" + SERIES + "/main/binary-{arch}/Packages.gz"
 
 # colors only in a terminal (CircleCI shows them too, plain files stay readable)
 TTY = sys.stdout.isatty()
@@ -17,7 +17,7 @@ GREEN, RED, DIM, RESET = ("\033[32m", "\033[31m", "\033[2m", "\033[0m") if TTY e
 
 
 def package(version):
-    # "8.5.13-2+ubuntu24.04.1+deb.sury.org+1" -> "8.5.13-2"
+    # "8.5.13-2+debsuryorg26.04.1+php+1" -> "8.5.13-2"
     return version.split("+", 1)[0] if version else "-"
 
 
@@ -26,20 +26,22 @@ with open("src/scripts/install_php.sh") as f:
     versions = re.findall(r'^\s*"(\d+\.\d+):\d+"', f.read(), re.M)
 
 print("PHP PREFLIGHT")
-print(f"{DIM}Checks that the ondrej/php PPA (Launchpad) has published the same php-fpm package")
+print(f"{DIM}Checks that the sury.org php repo has published the same php-fpm package")
 print(f"for {' and '.join(ARCHS)} on Ubuntu {SERIES}. Otherwise the multi-arch build gets different PHP versions.")
 print(f"PHP versions from src/scripts/install_php.sh: {', '.join(versions)}{RESET}")
 print()
 print(f"  {'PHP':<6}{'amd64':<18}{'arm64':<18}STATUS")
 
+# one package index per architecture: {arch: {"php8.4-fpm": "8.4.x-y+...", ...}}
+published = {}
+for arch in ARCHS:
+    text = gzip.decompress(urllib.request.urlopen(INDEX.format(arch=arch), timeout=30).read()).decode()
+    stanzas = (dict(re.findall(r"^(Package|Version): (\S+)", st, re.M)) for st in text.split("\n\n"))
+    published[arch] = {st["Package"]: st["Version"] for st in stanzas if "Version" in st}
+
 failed = []
 for v in versions:
-    entries = json.load(urllib.request.urlopen(API.format(v=v), timeout=30))["entries"]
-    found = {}
-    for e in entries:
-        series, arch = e["distro_arch_series_link"].split("/")[-2:]
-        if series == SERIES and arch in ARCHS:
-            found[arch] = e["binary_package_version"]
+    found = {a: published[a][f"php{v}-fpm"] for a in ARCHS if f"php{v}-fpm" in published[a]}
 
     missing = [a for a in ARCHS if a not in found]
     if missing:
@@ -55,7 +57,7 @@ for v in versions:
 print()
 if failed:
     print(f"{RED}FAILED: PHP {', '.join(failed)} not published for all architectures yet.{RESET}")
-    print("Launchpad usually builds arm64 a few hours after amd64. Nothing to fix here, try again later.")
+    print("arm64 is usually built a few hours after amd64. Nothing to fix here, try again later.")
     sys.exit(1)
 
 print(f"{GREEN}OK: all PHP versions are published with the same package for {' and '.join(ARCHS)}.{RESET}")

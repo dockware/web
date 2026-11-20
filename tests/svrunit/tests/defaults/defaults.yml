@@ -1,7 +1,7 @@
 commands:
-  - name: "Check Ubuntu 24.04"
-    command: "lsb_release -a"
-    expected: "Ubuntu 24.04"
+  - name: "Check Ubuntu 26.04"
+    command: "cat /etc/os-release"
+    expected: "Ubuntu 26.04"
 
   - name: "SUDO is installed"
     command: "sudo"
@@ -33,7 +33,7 @@ commands:
 
   - name: "Permission: Verify 'dockware' user is alias for 'www-data'"
     command: "cat /etc/passwd"
-    expected: "dockware:x:33:33:,,,:/var/www:/bin/bash"
+    expected: "dockware:x:33:33::/var/www:/bin/bash"
 
   - name: "Default working directory is /var/www/html"
     command: "pwd"
@@ -45,7 +45,7 @@ commands:
 
   - name: "Supervisor is installed"
     command: "echo SVRUNIT: $(supervisord --version)"
-    expected: "SVRUNIT: 4.2."
+    expected: "SVRUNIT: 4.3."
 
   - name: "Supervisor is not running"
     command: "sudo service supervisor status"
