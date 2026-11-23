@@ -1,4 +1,3 @@
-# apcu, xdebug, redis, amqp, pcov and zstd are not yet published for 8.6
 apt-get install -y php8.6-fpm \
                    php8.6-cli \
                    php8.6-gd \
@@ -14,4 +13,10 @@ apt-get install -y php8.6-fpm \
                    php8.6-gettext \
                    php8.6-zip \
                    php8.6-soap \
-                   php8.6-bcmath
+                   php8.6-apcu \
+                   php8.6-xdebug \
+                   php8.6-bcmath \
+                   php8.6-redis \
+                   php8.6-amqp \
+                   php8.6-pcov \
+                   php8.6-zstd

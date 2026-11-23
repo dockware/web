@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.6.0]
 
 ### Added
 
-- Add PHP 8.6 (Xdebug, APCu, Redis, AMQP, PCov and zstd follow once they are published for 8.6).
+- Add PHP 8.6 with APCu, Redis, AMQP, PCov, zstd and Xdebug. Xdebug is the pre-release 3.6.0alpha1, because no stable build for PHP 8.6 exists yet.
 
 ### Changed
 
